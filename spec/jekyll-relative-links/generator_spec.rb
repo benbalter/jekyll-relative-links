@@ -50,11 +50,13 @@ RSpec.describe JekyllRelativeLinks::Generator do
     end
 
     it "handles links within subdirectories" do
-      expect(subdir_page.content).to include("[Another subdir page](/subdir/another-subdir-page.html)")
+      expected = "[Another subdir page](/subdir/another-subdir-page.html)"
+      expect(subdir_page.content).to include(expected)
     end
 
     it "handles relative links within subdirectories" do
-      expect(subdir_page.content).to include("[Relative subdir page](/subdir/another-subdir-page.html)")
+      expected = "[Relative subdir page](/subdir/another-subdir-page.html)"
+      expect(subdir_page.content).to include(expected)
     end
 
     it "handles directory traversal" do
@@ -70,18 +72,20 @@ RSpec.describe JekyllRelativeLinks::Generator do
     end
 
     context "with a baseurl" do
-      let(:site) { fixture_site("site", baseurl: "/foo") }
+      let(:site) { fixture_site("site", :baseurl => "/foo") }
 
       it "converts relative links" do
         expect(page.content).to include("[Another Page](/foo/another-page.html)")
       end
 
       it "handles links within subdirectories" do
-        expect(subdir_page.content).to include("[Another subdir page](/foo/subdir/another-subdir-page.html)")
+        expected = "[Another subdir page](/foo/subdir/another-subdir-page.html)"
+        expect(subdir_page.content).to include(expected)
       end
 
       it "handles relative links within subdirectories" do
-        expect(subdir_page.content).to include("[Relative subdir page](/foo/subdir/another-subdir-page.html)")
+        expected = "[Relative subdir page](/foo/subdir/another-subdir-page.html)"
+        expect(subdir_page.content).to include(expected)
       end
 
       it "handles directory traversal" do
