@@ -16,7 +16,17 @@ While that would render as a valid link on GitHub.com, it would not be a valid l
 [foo](bar.html)
 ```
 
-It even work with pages with custom permalinks.
+It even work with pages with custom permalinks. If you have `bar.md` with the following:
+
+```
+---
+permalink: /bar/
+---
+
+# bar
+```
+
+Then `[foo](bar.md)` will render as `[foo](/bar/).
 
 ## Why
 
