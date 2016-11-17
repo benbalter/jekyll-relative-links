@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -e
+
+bundle exec rspec
+bundle exec rubocop -S -D
+gem build jekyll-relative-links.gemspec
