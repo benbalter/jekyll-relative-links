@@ -55,5 +55,13 @@ RSpec.describe JekyllRelativeLinks::Generator do
     it "doesn't mangle invalid pages" do
       expect(page.content).to include("[Ghost page](ghost-page.md)")
     end
+
+    context "with a baseurl" do
+      let(:site) { fixture_site("site", baseurl: "/foo") }
+
+      it "converts relative links" do
+        expect(page.content).to include("[Another Page](/foo/another-page.html)")
+      end
+    end
   end
 end
