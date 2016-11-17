@@ -26,7 +26,7 @@ permalink: /bar/
 # bar
 ```
 
-Then `[foo](bar.md)` will render as `[foo](/bar/).
+Then `[foo](bar.md)` will render as `[foo](/bar/)`.
 
 ## Why
 
