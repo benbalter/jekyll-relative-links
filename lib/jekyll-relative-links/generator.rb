@@ -15,13 +15,15 @@ module JekyllRelativeLinks
     def generate(site)
       site.pages.each do |page|
         next unless markdown_extension?(page.extname)
+        url_base = File.dirname(page.path)
 
         page.content.gsub!(LINK_REGEX) do |original|
-          link_text     = Regexp.last_match(1)
-          relative_path = Regexp.last_match(2).sub(%r!\A/!, "")
-          extension     = File.extname(relative_path)
+          link_text      = Regexp.last_match(1)
+          relative_path  = Regexp.last_match(2).sub(%r!\A/!, "")
+          absolute_path  = File.expand_path(relative_path, url_base)
+          path_from_root = absolute_path.sub(%r!\A#{Dir.pwd}/!, "")
 
-          if markdown_extension?(extension) && (url = url_for_path(relative_path))
+          if (url = url_for_path(path_from_root))
             "[#{link_text}](#{site.baseurl}#{url})"
           else
             original
@@ -29,6 +31,8 @@ module JekyllRelativeLinks
         end
       end
     end
+
+    private
 
     def markdown_extension?(extension)
       markdown_converter.matches(extension)
@@ -39,6 +43,9 @@ module JekyllRelativeLinks
     end
 
     def url_for_path(path)
+      extension = File.extname(path)
+      return unless markdown_extension?(extension)
+
       page = site.pages.find { |p| p.path == path }
       page.url if page
     end
