@@ -13,6 +13,8 @@ module JekyllRelativeLinks
     end
 
     def generate(site)
+      @site = site
+      
       site.pages.each do |page|
         next unless markdown_extension?(page.extname)
         url_base = File.dirname(page.path)
