@@ -5,7 +5,9 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    LINK_REGEX = %r!\[([^\]]+)\]\(([^\)]+)\)!
+    INLINE_LINK_REGEX = %r!\[([^\]]+)\]\(([^\)]+)\)!
+    REFERENCE_LINK_REGEX = %r!^\[([^\]]+)\]: (.*)$!
+    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
 
     safe true
@@ -25,13 +27,14 @@ module JekyllRelativeLinks
         url_base = File.dirname(page.path)
 
         page.content.gsub!(LINK_REGEX) do |original|
-          link_text      = Regexp.last_match(1)
-          relative_path  = Regexp.last_match(2).sub(%r!\A/!, "")
-          absolute_path  = File.expand_path(relative_path, url_base)
-          path_from_root = absolute_path.sub(%r!\A#{Dir.pwd}/!, "")
+          link_type     = Regexp.last_match(2) ? :inline : :reference
+          link_text     = Regexp.last_match(link_type == :inline ? 2 : 4)
+          relative_path = Regexp.last_match(link_type == :inline ? 3 : 5)
+          relative_path.sub!(%r!\A/!, "")
+          url = url_for_path(path_from_root(relative_path, url_base))
 
-          if (url = url_for_path(path_from_root))
-            "[#{link_text}](#{url})"
+          if url
+            replacement_text(link_type, link_text, url)
           else
             original
           end
@@ -59,6 +62,19 @@ module JekyllRelativeLinks
 
       page = site.pages.find { |p| p.path == path }
       relative_url(page.url) if page
+    end
+
+    def path_from_root(relative_path, url_base)
+      absolute_path = File.expand_path(relative_path, url_base)
+      absolute_path.sub(%r!\A#{Dir.pwd}/!, "")
+    end
+
+    def replacement_text(type, text, url)
+      if type == :inline
+        "[#{text}](#{url})"
+      else
+        "[#{text}]: #{url}"
+      end
     end
   end
 end

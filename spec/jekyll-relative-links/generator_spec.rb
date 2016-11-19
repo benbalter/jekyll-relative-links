@@ -71,6 +71,12 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include("[Ghost page](ghost-page.md)")
     end
 
+    context "reference links" do
+      it "handles reference links" do
+        expect(page.content).to include("[reference]: /another-page.html")
+      end
+    end
+
     context "with a baseurl" do
       let(:site) { fixture_site("site", :baseurl => "/foo") }
 
