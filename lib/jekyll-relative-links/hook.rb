@@ -23,7 +23,6 @@ module JekyllRelativeLinks
         url_base = File.dirname(page.path)
 
         page.content.gsub!(LINK_REGEX) do |anchor|
-          # puts original
           original_href = Regexp.last_match(1)
           original_href.sub!(%r!\A/!, "")
           url = url_for_path(path_from_root(original_href, url_base))
