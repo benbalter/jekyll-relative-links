@@ -24,7 +24,9 @@ def fixture_path(fixture)
 end
 
 def fixture_site(fixture, override = {})
-  default_config = { "source" => fixture_path(fixture) }
+  default_config = { "source"      => fixture_path(fixture),
+                     "destination" => fixture_path("output") }
+
   config = Jekyll::Utils.deep_merge_hashes(default_config, override)
   config = Jekyll.configuration(config)
   Jekyll::Site.new(config)
