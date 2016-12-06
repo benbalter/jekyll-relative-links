@@ -1,16 +1,16 @@
 # Jekyll Relative Links
 
-A Jekyll plugin to convert relative links to markdown files to their rendered equivalents.
+A Jekyll plugin to convert relative links to Markdown files to their rendered equivalents.
 
 ## What it does
 
-Let's say you have a link like this in a markdown file:
+Let's say you have a link like this in a Markdown file:
 
 ```
 [foo](bar.md)
 ```
 
-While that would render as a valid link on GitHub.com, it would not be a valid link on Pages. Instead, this plugin converst that link to:
+While that would render as a valid link on GitHub.com, it would not be a valid link on Pages. Instead, this plugin converts that link to:
 
 ```
 [foo](bar.html)
@@ -30,7 +30,7 @@ Then `[foo](bar.md)` will render as `[foo](/bar/)`.
 
 ## Why
 
-Because markdown files rendered by GitHub Pages should behave similar to Markdown files rendered on GitHub.com
+Because Markdown files rendered by GitHub Pages should behave similar to Markdown files rendered on GitHub.com
 
 ## Usage
 
