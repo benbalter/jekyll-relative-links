@@ -1,5 +1,7 @@
 # Jekyll Relative Links
 
+[![Build Status](https://travis-ci.org/benbalter/jekyll-relative-links.svg?branch=master)](https://travis-ci.org/benbalter/jekyll-relative-links)
+
 A Jekyll plugin to convert relative links to markdown files to their rendered equivalents.
 
 ## What it does
