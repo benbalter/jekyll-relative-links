@@ -1,5 +1,5 @@
-/_site
 /tmp
 /spec/examples.txt
+/spec/fixtures/output/
 /Gemfile.lock
 *.gem

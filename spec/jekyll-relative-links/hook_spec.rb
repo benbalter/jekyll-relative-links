@@ -1,4 +1,4 @@
-RSpec.describe JekyllRelativeLinks::Generator do
+RSpec.describe JekyllRelativeLinks::Hook do
   let(:site) { fixture_site("site") }
   let(:page) { page_by_path(site, "page.md") }
   let(:html_page) { page_by_path(site, "html-page.html") }
@@ -9,7 +9,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
   before(:each) do
     site.reset
-    site.read
+    site.process
   end
 
   it "saves the site" do
@@ -31,71 +31,63 @@ RSpec.describe JekyllRelativeLinks::Generator do
   end
 
   context "generating" do
-    before { subject.generate(site) }
-
     it "converts relative links" do
-      expect(page.content).to include("[Another Page](/another-page.html)")
+      expect(page.content).to include(%(href="/another-page.html"))
     end
 
     it "converts relative links with permalinks" do
-      expect(page.content).to include("[Page with permalink](/page-with-permalink/)")
+      expect(page.content).to include(%(href="/page-with-permalink/"))
     end
 
     it "converts relative links with leading slashes" do
-      expect(page.content).to include("[Page with leading slash](/another-page.html)")
+      expect(page.content).to include(%(href="/another-page.html"))
     end
 
     it "converts pages in sub-directories" do
-      expect(page.content).to include("[Subdir Page](/subdir/page.html)")
+      expect(page.content).to include(%(href="/subdir/page.html"))
     end
 
     it "handles links within subdirectories" do
-      expected = "[Another subdir page](/subdir/another-subdir-page.html)"
+      expected = %(href="/subdir/another-subdir-page.html")
       expect(subdir_page.content).to include(expected)
     end
 
     it "handles relative links within subdirectories" do
-      expected = "[Relative subdir page](/subdir/another-subdir-page.html)"
+      expected = %(href="/subdir/another-subdir-page.html")
       expect(subdir_page.content).to include(expected)
     end
 
     it "handles directory traversal" do
-      expect(subdir_page.content).to include("[Dir traversal](/page.html)")
+      expect(subdir_page.content).to include(%(href="/page.html"))
     end
 
     it "doesn't mangle HTML pages" do
-      expect(page.content).to include("[HTML Page](html-page.html)")
+      expect(page.content).to include(%(href="html-page.html"))
     end
 
     it "doesn't mangle invalid pages" do
-      expect(page.content).to include("[Ghost page](ghost-page.md)")
-    end
-
-    context "reference links" do
-      it "handles reference links" do
-        expect(page.content).to include("[reference]: /another-page.html")
-      end
+      expect(page.content).to include(%(href="ghost-page.md"))
     end
 
     context "with a baseurl" do
       let(:site) { fixture_site("site", :baseurl => "/foo") }
 
       it "converts relative links" do
-        expect(page.content).to include("[Another Page](/foo/another-page.html)")
+        expect(page.content).to include(%(href="/foo/another-page.html"))
       end
 
       it "handles links within subdirectories" do
-        expected = "[Another subdir page](/foo/subdir/another-subdir-page.html)"
+        expected = %(href="/foo/subdir/another-subdir-page.html")
         expect(subdir_page.content).to include(expected)
       end
 
       it "handles relative links within subdirectories" do
-        expected = "[Relative subdir page](/foo/subdir/another-subdir-page.html)"
+        expected = %(href="/foo/subdir/another-subdir-page.html")
         expect(subdir_page.content).to include(expected)
       end
 
       it "handles directory traversal" do
-        expect(subdir_page.content).to include("[Dir traversal](/foo/page.html)")
+        expect(subdir_page.content).to include(%(href="/foo/page.html"))
       end
     end
   end

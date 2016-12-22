@@ -1,24 +1,20 @@
 module JekyllRelativeLinks
-  class Generator < Jekyll::Generator
+  class Hook
     attr_accessor :site
 
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    INLINE_LINK_REGEX = %r!\[([^\]]+)\]\(([^\)]+)\)!
-    REFERENCE_LINK_REGEX = %r!^\[([^\]]+)\]: (.*)$!
-    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
+    HREF_REGEX = %r!href=\"(.*?)\"!
+    LINK_REGEX = %r!<a[^>]+#{HREF_REGEX}[^>]*>!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
-
-    safe true
-    priority :lowest
 
     def initialize(site)
       @site    = site
       @context = context
     end
 
-    def generate(site)
+    def convert
       @site    = site
       @context = context
 
@@ -26,17 +22,15 @@ module JekyllRelativeLinks
         next unless markdown_extension?(page.extname)
         url_base = File.dirname(page.path)
 
-        page.content.gsub!(LINK_REGEX) do |original|
-          link_type     = Regexp.last_match(2) ? :inline : :reference
-          link_text     = Regexp.last_match(link_type == :inline ? 2 : 4)
-          relative_path = Regexp.last_match(link_type == :inline ? 3 : 5)
-          relative_path.sub!(%r!\A/!, "")
-          url = url_for_path(path_from_root(relative_path, url_base))
+        page.content.gsub!(LINK_REGEX) do |anchor|
+          original_href = Regexp.last_match(1)
+          original_href.sub!(%r!\A/!, "")
+          url = url_for_path(path_from_root(original_href, url_base))
 
           if url
-            replacement_text(link_type, link_text, url)
+            anchor.sub!(HREF_REGEX, %(href="#{url}"))
           else
-            original
+            anchor
           end
         end
       end
