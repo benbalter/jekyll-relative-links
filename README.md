@@ -12,7 +12,7 @@ Let's say you have a link like this in a markdown file:
 [foo](bar.md)
 ```
 
-While that would render as a valid link on GitHub.com, it would not be a valid link on Pages. Instead, this plugin converst that link to:
+While that would render as a valid link on GitHub.com, it would not be a valid link on Pages. Instead, this plugin converts that link to:
 
 ```
 [foo](bar.html)
