@@ -5,8 +5,10 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    INLINE_LINK_REGEX = %r!\[([^\]]+)\]\(([^\)]+)\)!
-    REFERENCE_LINK_REGEX = %r!^\[([^\]]+)\]: (.*)$!
+    LINK_TEXT_REGEX = %r!([^\]]+)!
+    FRAGMENT_REGEX = %r!(#.+)?!
+    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
+    REFERENCE_LINK_REGEX = %r!^\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
 
@@ -28,12 +30,15 @@ module JekyllRelativeLinks
 
         page.content.gsub!(LINK_REGEX) do |original|
           link_type     = Regexp.last_match(2) ? :inline : :reference
-          link_text     = Regexp.last_match(link_type == :inline ? 2 : 4)
-          relative_path = Regexp.last_match(link_type == :inline ? 3 : 5)
+          link_text     = Regexp.last_match(link_type == :inline ? 2 : 5)
+          relative_path = Regexp.last_match(link_type == :inline ? 3 : 6)
+          fragment      = Regexp.last_match(link_type == :inline ? 4 : 7)
+
           relative_path.sub!(%r!\A/!, "")
           url = url_for_path(path_from_root(relative_path, url_base))
 
           if url
+            url << fragment if fragment
             replacement_text(link_type, link_text, url)
           else
             original
