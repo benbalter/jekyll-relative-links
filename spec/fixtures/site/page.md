@@ -17,4 +17,8 @@
 
 [Ghost page](ghost-page.md)
 
+[Fragment](another-page.md#foo)
+
+[Fragment with permalink](page-with-permalink.md#foo)
+
 [reference]: another-page.md
