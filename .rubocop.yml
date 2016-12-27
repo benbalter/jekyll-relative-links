@@ -6,5 +6,11 @@ AllCops:
     - vendor/**/*
 
 Metrics/BlockLength:
-    Exclude:
-      - spec/**/*
+  Exclude:
+    - spec/**/*
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
