@@ -98,5 +98,21 @@ RSpec.describe JekyllRelativeLinks::Generator do
         expect(subdir_page.content).to include("[Dir traversal](/foo/page.html)")
       end
     end
+
+    context "linking to page fragments" do
+      it "converts relative links" do
+        expect(page.content).to include("[Fragment](/another-page.html#foo)")
+      end
+
+      it "converts relative links with permalinks" do
+        expected = "[Fragment with permalink](/page-with-permalink/#foo)"
+        expect(page.content).to include(expected)
+      end
+
+      it "converts reference links" do
+        expected = "[reference-with-fragment]: /another-page.html#foo"
+        expect(page.content).to include(expected)
+      end
+    end
   end
 end
