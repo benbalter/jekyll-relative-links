@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module JekyllRelativeLinks
   class Context
     attr_reader :site
