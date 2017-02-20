@@ -18,7 +18,7 @@ module HTML
 
         base = context[:base_url]
         # Base should always end in /
-        base = base + "/" unless base[-1] == "/"
+        base += "/" unless base.end_with?("/")
         @base_url = Addressable::URI.parse(base)
       end
 
@@ -46,7 +46,8 @@ module HTML
       end
 
       def apply_filter(node, attribute)
-        if attr = node.attributes[attribute]
+        attr = node.attributes[attribute]
+        if attr
           new_url = make_relative(attr.value)
           attr.value = new_url if new_url
         end
@@ -56,7 +57,7 @@ module HTML
         return unless url
 
         # Explicit protocol, e.g. https://example.com/
-        return if url.match(%r{^[a-z][a-z0-9\+\.\-]+:}i)
+        return if url =~ %r!^[a-z][a-z0-9\+\.\-]+:!i
         # Protocol relative, e.g. //example.com/
         return if url.start_with?("//")
         # Hash, e.g #foobar
@@ -75,11 +76,11 @@ module HTML
       def corrected_link(link)
         url = @base_url
 
-        if link.start_with?("/")
-          url = url.join(link.sub(%r{^/}, ''))
-        else
-          url = url.join(context[:current_url]).join(link)
-        end
+        url = if link.start_with?("/")
+                url.join(link.sub("/", ""))
+              else
+                url.join(context[:current_url]).join(link)
+              end
 
         url.to_s
       end

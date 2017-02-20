@@ -1,12 +1,12 @@
 RSpec.describe HTML::Pipeline::RelativeLinkFilter do
   def filter_link(url)
-    content = %|<a href="#{url}">thing</a>|
+    content = %(<a href="#{url}">thing</a>)
     result = HTML::Pipeline::RelativeLinkFilter.new(content, context, nil).call
-    result.search('a').first.attribute('href').value
+    result.search("a").first.attribute("href").value
   end
 
   describe "anchors" do
-    context 'with a root of /root' do
+    context "with a root of /root" do
       let(:context) do
         { :current_url => "", :base_url => "/root" }
       end
@@ -47,14 +47,14 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
       end
 
       it "ignores anchors without an href" do
-        content = %|<a name="foo">thing</a>|
+        content = %(<a name="foo">thing</a>)
         result = HTML::Pipeline::RelativeLinkFilter.new(content, context, nil).call
-        href = result.search('a').first.attribute('href')
+        href = result.search("a").first.attribute("href")
         expect(href).to be(nil)
       end
     end
 
-    context 'with a root of ""' do
+    context "with an empty root" do
       let(:context) do
         { :current_url => "", :base_url => "" }
       end
@@ -82,12 +82,12 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
 
   describe "images" do
     def filter_img(url)
-      content = %|<img src="#{url}">|
+      content = %(<img src="#{url}">)
       result = HTML::Pipeline::RelativeLinkFilter.new(content, context, nil).call
-      result.search('img').first.attribute('src').value
+      result.search("img").first.attribute("src").value
     end
 
-    context 'with a root of /root' do
+    context "with a root of /root" do
       let(:context) do
         { :current_url => "", :base_url => "/root" }
       end
@@ -112,7 +112,9 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
       end
 
       it "ignores external URLs" do
-        expect(filter_img("https://example.com/foo.png")).to eql("https://example.com/foo.png")
+        expect(filter_img("https://example.com/foo.png")).to eql(
+          "https://example.com/foo.png"
+        )
       end
 
       it "ignores protocol relative urls" do
@@ -120,9 +122,9 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
       end
 
       it "ignores images without a src" do
-        content = %|<img alt="yep">|
+        content = %(<img alt="yep">)
         result = HTML::Pipeline::RelativeLinkFilter.new(content, context, nil).call
-        src = result.search('img').first.attribute('src')
+        src = result.search("img").first.attribute("src")
         expect(src).to be(nil)
       end
     end
@@ -152,5 +154,4 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
       end
     end
   end
-
 end

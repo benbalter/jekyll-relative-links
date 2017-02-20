@@ -17,7 +17,7 @@ module JekyllRelativeLinks
     def filter(base_url, current_url)
       HTML::Pipeline.new(
         [HTML::Pipeline::RelativeLinkFilter],
-        {:base_url => base_url, :current_url => current_url}
+        { :base_url => base_url, :current_url => current_url }
       )
     end
 
