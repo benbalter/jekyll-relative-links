@@ -78,6 +78,37 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
         expect(filter_link("/absolute")).to eql("/absolute")
       end
     end
+
+    context "with a fully-qualified base" do
+      let(:context) do
+        { :current_url => "", :base_url => "http://example.com/foo" }
+      end
+
+      it "prefixes relative urls with root" do
+        expect(filter_link("relative")).to eql("http://example.com/foo/relative")
+      end
+
+      it "prefixes relative urls with root and current path" do
+        context[:current_url] = "current/page"
+        expect(filter_link("relative")).to eql("http://example.com/foo/current/relative")
+      end
+
+      it "prefixes relative urls with root and current path as a directory" do
+        context[:current_url] = "current/page/"
+        expect(filter_link("relative")).to eql(
+          "http://example.com/foo/current/page/relative"
+        )
+      end
+
+      it "makes absolute urls relative to root" do
+        context[:current_url] = "current/page"
+        expect(filter_link("/absolute")).to eql("http://example.com/foo/absolute")
+      end
+
+      it "does not duplicate root if it already exists" do
+        expect(filter_link("/foo/bar")).to eql("http://example.com/foo/bar")
+      end
+    end
   end
 
   describe "images" do

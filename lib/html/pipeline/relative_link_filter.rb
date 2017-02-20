@@ -62,8 +62,6 @@ module HTML
         return if url.start_with?("//")
         # Hash, e.g #foobar
         return if url.start_with?("#")
-        # Already includes base url
-        return if url.start_with?(@base_url.to_s) && @base_url.to_s != "/"
 
         corrected_link(url)
       end
@@ -76,9 +74,14 @@ module HTML
       def corrected_link(link)
         url = @base_url
 
-        url = if link.start_with?("/")
+        url = if link.start_with?(url.path)
+                # Link already includes our base url
+                url.join(link)
+              elsif link.start_with?("/")
+                # Make link relative to base
                 url.join(link.sub("/", ""))
               else
+                # Make link relative to base and current page
                 url.join(context[:current_url]).join(link)
               end
 
