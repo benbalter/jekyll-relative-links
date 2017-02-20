@@ -31,6 +31,12 @@ module HTML
         doc.search("img").each do |node|
           apply_filter node, "src"
         end
+        doc.search("script").each do |node|
+          apply_filter node, "src"
+        end
+        doc.search("link").each do |node|
+          apply_filter node, "href"
+        end
 
         doc
       end
