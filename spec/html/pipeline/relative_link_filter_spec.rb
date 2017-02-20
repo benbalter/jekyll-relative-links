@@ -25,9 +25,13 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
         expect(filter_link("relative")).to eql("/root/current/page/relative")
       end
 
-      it "makes absolute urls relative to root root" do
+      it "makes absolute urls relative to root" do
         context[:current_url] = "current/page"
         expect(filter_link("/absolute")).to eql("/root/absolute")
+      end
+
+      it "does not duplicate root if it already exists" do
+        expect(filter_link("/root/foo")).to eql("/root/foo")
       end
 
       it "ignores external URLs" do
@@ -69,7 +73,7 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
         expect(filter_link("relative")).to eql("/current/page/relative")
       end
 
-      it "makes absolute urls relative to root root" do
+      it "makes absolute urls relative to root" do
         context[:current_url] = "current/page"
         expect(filter_link("/absolute")).to eql("/absolute")
       end
@@ -102,7 +106,7 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
         expect(filter_img("relative.png")).to eql("/root/current/page/relative.png")
       end
 
-      it "makes absolute urls relative to root root" do
+      it "makes absolute urls relative to root" do
         context[:current_url] = "current/page"
         expect(filter_img("/absolute.png")).to eql("/root/absolute.png")
       end
@@ -142,7 +146,7 @@ RSpec.describe HTML::Pipeline::RelativeLinkFilter do
         expect(filter_img("relative")).to eql("/current/page/relative")
       end
 
-      it "makes absolute urls relative to root root" do
+      it "makes absolute urls relative to root" do
         context[:current_url] = "current/page"
         expect(filter_img("/absolute")).to eql("/absolute")
       end

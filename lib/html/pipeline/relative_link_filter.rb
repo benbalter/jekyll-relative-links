@@ -52,9 +52,11 @@ module HTML
         # Explicit protocol, e.g. https://example.com/
         return if url.match(%r{^[a-z][a-z0-9\+\.\-]+:}i)
         # Protocol relative, e.g. //example.com/
-        return if url.match(%r{^//})
+        return if url.start_with?("//")
         # Hash, e.g #foobar
-        return if url.match(/^#/)
+        return if url.start_with?("#")
+        # Already includes base url
+        return if url.start_with?(@base_url.to_s) && @base_url.to_s != "/"
 
         corrected_link(url)
       end
@@ -67,7 +69,7 @@ module HTML
       def corrected_link(link)
         url = @base_url
 
-        if link[0] == "/"
+        if link.start_with?("/")
           url = url.join(link.sub(%r{^/}, ''))
         else
           url = url.join(context[:current_url]).join(link)
