@@ -24,7 +24,7 @@ module JekyllRelativeLinks
       @site    = site
       @context = context
 
-      site.each_site_file do |page|
+      (site.pages + site.docs_to_write).each do |page|
         next unless markdown_extension?(page.extname)
         url_base = File.dirname(page.relative_path)
 
