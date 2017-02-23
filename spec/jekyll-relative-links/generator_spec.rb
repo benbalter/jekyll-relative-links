@@ -71,6 +71,15 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include("[Ghost page](ghost-page.md)")
     end
 
+    it "converts collection docs" do
+      doc = site.documents.find { |p| p.relative_path == "_things/thing1.md" }
+      expect(doc.content).to include("[thing2](/thing2/)")
+    end
+
+    it "converts links to collection docs" do
+      expect(page.content).to include("[collection doc](/thing1/)")
+    end
+
     context "reference links" do
       it "handles reference links" do
         expect(page.content).to include("[reference]: /another-page.html")

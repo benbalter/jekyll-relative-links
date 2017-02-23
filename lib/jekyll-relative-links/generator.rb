@@ -24,9 +24,9 @@ module JekyllRelativeLinks
       @site    = site
       @context = context
 
-      site.pages.each do |page|
+      site.each_site_file do |page|
         next unless markdown_extension?(page.extname)
-        url_base = File.dirname(page.path)
+        url_base = File.dirname(page.relative_path)
 
         page.content.gsub!(LINK_REGEX) do |original|
           link_type     = Regexp.last_match(2) ? :inline : :reference
@@ -65,7 +65,12 @@ module JekyllRelativeLinks
       extension = File.extname(path)
       return unless markdown_extension?(extension)
 
-      page = site.pages.find { |p| p.path == path }
+      page = site.pages.find { |p| p.path == path } ||
+        # FIXME: Document#path returns an absolute path on the filesystem
+        site.docs_to_write.find { |p| p.relative_path == path }
+        # FIXME: check Site#static_files too
+        # FIXME: Site#each_site_file could be used here, but it takes a block
+        #        and does not return an iterator that can be used for the #find
       relative_url(page.url) if page
     end
 
