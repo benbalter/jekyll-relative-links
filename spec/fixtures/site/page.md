@@ -23,6 +23,8 @@
 
 [Fragment with permalink](page-with-permalink.md#foo)
 
+[collection doc](_things/thing1.md)
+
 [reference]: another-page.md
 
 [reference-with-fragment]: another-page.md#foo
