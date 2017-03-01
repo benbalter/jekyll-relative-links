@@ -70,8 +70,7 @@ module JekyllRelativeLinks
 
     def find_target(path)
       site.pages.find { |p| p.path == path } ||
-        site.docs_to_write.find { |p| p.relative_path == path } ||
-        site.static_files.find { |p| p.relative_path == path }
+        site.docs_to_write.find { |p| p.relative_path == path }
     end
 
     def path_from_root(relative_path, url_base)
