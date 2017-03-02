@@ -62,11 +62,12 @@ module JekyllRelativeLinks
     end
 
     def url_for_path(path)
-      extension = File.extname(path)
-      return unless markdown_extension?(extension)
+      target = potential_targets.find { |p| p.relative_path.sub(%r!\A/!, "") == path }
+      relative_url(target.url) if target
+    end
 
-      page = site.pages.find { |p| p.path == path }
-      relative_url(page.url) if page
+    def potential_targets
+      @potential_targets ||= (site.pages + site.static_files)
     end
 
     def path_from_root(relative_path, url_base)
