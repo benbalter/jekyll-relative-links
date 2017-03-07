@@ -30,17 +30,12 @@ module JekyllRelativeLinks
 
         begin
           page.content.gsub!(LINK_REGEX) do |original|
-            link_type     = Regexp.last_match(2) ? :inline : :reference
-            link_text     = Regexp.last_match(link_type == :inline ? 2 : 5)
-            relative_path = Regexp.last_match(link_type == :inline ? 3 : 6)
-            fragment      = Regexp.last_match(link_type == :inline ? 4 : 7)
-
-            relative_path.sub!(%r!\A/!, "")
-            url = url_for_path(path_from_root(relative_path, url_base))
+            link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
+            path = path_from_root(relative_path, url_base)
+            url  = url_for_path(path)
 
             if url
-              url << fragment if fragment
-              replacement_text(link_type, link_text, url)
+              replacement_text(link_type, link_text, url, fragment)
             else
               original
             end
@@ -52,6 +47,14 @@ module JekyllRelativeLinks
     end
 
     private
+
+    def link_parts(matches)
+      link_type     = matches[2] ? :inline : :reference
+      link_text     = matches[link_type == :inline ? 2 : 5]
+      relative_path = matches[link_type == :inline ? 3 : 6]
+      fragment      = matches[link_type == :inline ? 4 : 7]
+      [link_type, link_text, relative_path, fragment]
+    end
 
     def context
       JekyllRelativeLinks::Context.new(site)
@@ -74,11 +77,14 @@ module JekyllRelativeLinks
     end
 
     def path_from_root(relative_path, url_base)
+      relative_path.sub!(%r!\A/!, "")
       absolute_path = File.expand_path(relative_path, url_base)
       absolute_path.sub(%r!\A#{Dir.pwd}/!, "")
     end
 
-    def replacement_text(type, text, url)
+    def replacement_text(type, text, url, fragment = nil)
+      url << fragment if fragment
+
       if type == :inline
         "[#{text}](#{url})"
       else
