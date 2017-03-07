@@ -48,7 +48,6 @@ module JekyllRelativeLinks
         rescue ArgumentError => e
           raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
         end
-        
       end
     end
 
