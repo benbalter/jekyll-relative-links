@@ -26,7 +26,6 @@ module JekyllRelativeLinks
 
       site.pages.each do |page|
         next unless markdown_extension?(page.extname)
-
         replace_relative_links!(page)
       end
     end
@@ -50,6 +49,7 @@ module JekyllRelativeLinks
             original
           end
         end
+      end
     rescue ArgumentError => e
       raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
     end
