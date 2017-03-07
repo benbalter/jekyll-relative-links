@@ -26,24 +26,26 @@ module JekyllRelativeLinks
 
       site.pages.each do |page|
         next unless markdown_extension?(page.extname)
-        url_base = File.dirname(page.path)
+        replace_relative_links!(page)
+      end
+    end
 
-        begin
-          page.content.gsub!(LINK_REGEX) do |original|
-            link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
-            path = path_from_root(relative_path, url_base)
-            url  = url_for_path(path)
+    def replace_relative_links!(page)
+      url_base = File.dirname(page.path)
 
-            if url
-              replacement_text(link_type, link_text, url, fragment)
-            else
-              original
-            end
-          end
-        rescue ArgumentError => e
-          raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
+      page.content.gsub!(LINK_REGEX) do |original|
+        link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
+        path = path_from_root(relative_path, url_base)
+        url  = url_for_path(path)
+
+        if url
+          replacement_text(link_type, link_text, url, fragment)
+        else
+          original
         end
       end
+    rescue ArgumentError => e
+      raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
     end
 
     private
