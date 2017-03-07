@@ -26,29 +26,32 @@ module JekyllRelativeLinks
 
       site.pages.each do |page|
         next unless markdown_extension?(page.extname)
-        url_base = File.dirname(page.path)
 
-        begin
-          page.content.gsub!(LINK_REGEX) do |original|
-            link_type     = Regexp.last_match(2) ? :inline : :reference
-            link_text     = Regexp.last_match(link_type == :inline ? 2 : 5)
-            relative_path = Regexp.last_match(link_type == :inline ? 3 : 6)
-            fragment      = Regexp.last_match(link_type == :inline ? 4 : 7)
-
-            relative_path.sub!(%r!\A/!, "")
-            url = url_for_path(path_from_root(relative_path, url_base))
-
-            if url
-              url << fragment if fragment
-              replacement_text(link_type, link_text, url)
-            else
-              original
-            end
-          end
-        rescue ArgumentError => e
-          raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
-        end
+        replace_relative_links!(page)
       end
+    end
+    
+    def replace_relative_links!(page)
+      url_base = File.dirname(page.path)
+      
+      page.content.gsub!(LINK_REGEX) do |original|
+        link_type     = Regexp.last_match(2) ? :inline : :reference
+        link_text     = Regexp.last_match(link_type == :inline ? 2 : 5)
+        relative_path = Regexp.last_match(link_type == :inline ? 3 : 6)
+        fragment      = Regexp.last_match(link_type == :inline ? 4 : 7)
+
+        relative_path.sub!(%r!\A/!, "")
+        url = url_for_path(path_from_root(relative_path, url_base))
+
+        if url
+          url << fragment if fragment
+            replacement_text(link_type, link_text, url)
+          else
+            original
+          end
+        end
+    rescue ArgumentError => e
+      raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
     end
 
     private
