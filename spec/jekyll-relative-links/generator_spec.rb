@@ -1,5 +1,6 @@
 RSpec.describe JekyllRelativeLinks::Generator do
-  let(:site) { fixture_site("site") }
+  let(:overrides) { {} }
+  let(:site) { fixture_site("site", overrides) }
   let(:page) { page_by_path(site, "page.md") }
   let(:html_page) { page_by_path(site, "html-page.html") }
   let(:another_page) { page_by_path(site, "another-page.md") }
@@ -78,7 +79,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
     end
 
     context "with a baseurl" do
-      let(:site) { fixture_site("site", :baseurl => "/foo") }
+      let(:overrides) { { "baseurl" => "/foo" } }
 
       it "converts relative links" do
         expect(page.content).to include("[Another Page](/foo/another-page.html)")
@@ -96,6 +97,14 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
       it "handles directory traversal" do
         expect(subdir_page.content).to include("[Dir traversal](/foo/page.html)")
+      end
+    end
+
+    context "with a non-standard permalink structure" do
+      let(:overrides) { { "permalink" => "/:year/:month/:title:output_ext" } }
+
+      it "includes the extension" do
+        expect(page.content).to include("[Another Page](/another-page.html)")
       end
     end
 
