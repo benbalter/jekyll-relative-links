@@ -25,6 +25,8 @@
 
 [Fragment with permalink](page-with-permalink.md#foo)
 
+[A first fragment inline](another-page.md#foo) and [a second fragment in the same line](page-with-permalink.md#bar)
+
 [reference]: another-page.md
 
 [reference-with-fragment]: another-page.md#foo
