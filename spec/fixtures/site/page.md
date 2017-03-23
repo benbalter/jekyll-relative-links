@@ -13,6 +13,8 @@
 
 [Reference with fragment][reference-with-fragment]
 
+[Reference fragment with brackets][reference-brackets]
+
 [Subdir Page](subdir/page.md)
 
 [HTML Page](html-page.html)
@@ -26,3 +28,5 @@
 [reference]: another-page.md
 
 [reference-with-fragment]: another-page.md#foo
+
+[reference-brackets]: another-page.md#(bar)
