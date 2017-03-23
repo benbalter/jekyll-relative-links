@@ -132,7 +132,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
         expected_fst = "[A first fragment inline](/another-page.html#foo)"
         expected_snd = "[a second fragment in the same line](/page-with-permalink/#bar)"
         expect(page.content).to include(expected_fst)
-        expect(page.content).to_not include(expected_snd)
+        expect(page.content).to include(expected_snd)
       end
     end
 
