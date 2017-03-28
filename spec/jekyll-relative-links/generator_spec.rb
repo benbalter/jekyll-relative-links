@@ -64,8 +64,8 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(subdir_page.content).to include("[Dir traversal](/page.html)")
     end
 
-    it "doesn't mangle HTML pages" do
-      expect(page.content).to include("[HTML Page](html-page.html)")
+    it "Handles HTML pages" do
+      expect(page.content).to include("[HTML Page](/html-page.html)")
     end
 
     it "doesn't mangle invalid pages" do
@@ -121,6 +121,12 @@ RSpec.describe JekyllRelativeLinks::Generator do
       it "converts reference links" do
         expected = "[reference-with-fragment]: /another-page.html#foo"
         expect(page.content).to include(expected)
+      end
+    end
+
+    context "images" do
+      it "handles images" do
+        expect(subdir_page.content).to include("![image](/jekyll-logo.png)")
       end
     end
   end

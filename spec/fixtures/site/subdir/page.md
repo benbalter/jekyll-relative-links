@@ -8,3 +8,5 @@
 [Relative subdir page](./another-subdir-page.md)
 
 [Dir traversal](../page.md)
+
+![image](../jekyll-logo.png)
