@@ -82,7 +82,7 @@ module JekyllRelativeLinks
     def path_from_root(relative_path, url_base)
       relative_path.sub!(%r!\A/!, "")
       absolute_path = File.expand_path(relative_path, url_base)
-      absolute_path.sub(%r!\A#{Dir.pwd}/!, "")
+      absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
     end
 
     def replacement_text(type, text, url, fragment = nil)
