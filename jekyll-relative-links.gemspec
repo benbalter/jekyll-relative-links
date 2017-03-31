@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-$:.unshift File.expand_path('../lib', __FILE__)
-require 'jekyll-relative-links/version'
+$:.unshift File.expand_path("../lib", __FILE__)
+require "jekyll-relative-links/version"
 
 Gem::Specification.new do |s|
   s.name          = "jekyll-relative-links"
@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
 
   s.files         = `git ls-files app lib`.split("\n")
   s.platform      = Gem::Platform::RUBY
-  s.require_paths = ['lib']
+  s.require_paths = ["lib"]
   s.license       = "MIT"
 
   s.add_dependency "jekyll", "~> 3.3"
