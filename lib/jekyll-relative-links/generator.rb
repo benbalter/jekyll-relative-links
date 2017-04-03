@@ -6,7 +6,7 @@ module JekyllRelativeLinks
     include Jekyll::Filters::URLFilters
 
     LINK_TEXT_REGEX = %r!([^\]]+)!
-    FRAGMENT_REGEX = %r!(#.+)?!
+    FRAGMENT_REGEX = %r!(#.+?)?!
     INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
     REFERENCE_LINK_REGEX = %r!^\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!

@@ -122,6 +122,18 @@ RSpec.describe JekyllRelativeLinks::Generator do
         expected = "[reference-with-fragment]: /another-page.html#foo"
         expect(page.content).to include(expected)
       end
+
+      it "converts reference links with brackets in fragment" do
+        expected = "[reference-brackets]: /another-page.html#(bar)"
+        expect(page.content).to include(expected)
+      end
+
+      it "converts multiple fragments in the same line" do
+        expected_fst = "[A first fragment inline](/another-page.html#foo)"
+        expected_snd = "[a second fragment in the same line](/page-with-permalink/#bar)"
+        expect(page.content).to include(expected_fst)
+        expect(page.content).to include(expected_snd)
+      end
     end
 
     context "images" do
