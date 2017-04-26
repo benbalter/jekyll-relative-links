@@ -35,6 +35,8 @@ module JekyllRelativeLinks
 
       page.content.gsub!(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
+        next original if fragment?(relative_path) || absolute_url?(relative_path)
+
         path = path_from_root(relative_path, url_base)
         url  = url_for_path(path)
 
@@ -93,6 +95,17 @@ module JekyllRelativeLinks
       else
         "[#{text}]: #{url}"
       end
+    end
+
+    def absolute_url?(string)
+      return unless string
+      Addressable::URI.parse(string).absolute?
+    rescue Addressable::URI::InvalidURIError
+      nil
+    end
+
+    def fragment?(string)
+      string && string.start_with?("#")
     end
   end
 end
