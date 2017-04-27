@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   s.license       = "MIT"
 
   s.add_dependency "jekyll", "~> 3.3"
+  s.add_dependency "html-pipeline"
+  s.add_dependency "addressable"
   s.add_development_dependency "rubocop", "~> 0.43"
   s.add_development_dependency "rspec", "~> 3.5"
 end
