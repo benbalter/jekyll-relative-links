@@ -1,6 +1,6 @@
 require "jekyll"
-require "jekyll-relative-links/generator"
-require "jekyll-relative-links/context"
+require_relative "jekyll-relative-links/generator"
+require_relative "jekyll-relative-links/context"
 
 module JekyllRelativeLinks
 end

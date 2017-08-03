@@ -1,4 +1,4 @@
-require "jekyll-relative-links"
+require_relative "../lib/jekyll-relative-links"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
