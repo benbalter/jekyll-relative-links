@@ -74,7 +74,7 @@ module JekyllRelativeLinks
 
     def url_for_path(path)
       target = potential_targets.find { |p| p.relative_path.sub(%r!\A/!, "") == path }
-      relative_url(target.url) if target
+      relative_url(target.url) if target && target.url
     end
 
     def potential_targets
