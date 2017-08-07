@@ -59,7 +59,7 @@ module JekyllRelativeLinks
           replace_relative_links!(page)
         end
       elsif @config["verbose"] > 0
-          puts "Skipping #{collection_name} because output is false"
+        puts "Skipping #{collection_name} because output is false"
       end
     end
 
