@@ -23,11 +23,11 @@ module JekyllRelativeLinks
     def generate(site)
       # Get any configuration specified
       # Defaults mean no change in behaviour
-      jrl_config = site.config['jekyll_relative_links'] || {}
+      jrl_config = site.config["jekyll_relative_links"] || {}
       @config = {}
-      @config['collections'] = jrl_config['collections'] || []
-      @config['process_all_collections'] = jrl_config['process_all_collections'] || false
-      @config['verbose'] = jrl_config['verbose'] || 0
+      @config["collections"] = jrl_config["collections"] || []
+      @config["process_all_collections"] = jrl_config["process_all_collections"] || false
+      @config["verbose"] = jrl_config["verbose"] || 0
 
       @site    = site
       @context = context
@@ -38,33 +38,33 @@ module JekyllRelativeLinks
       end
 
       site.collections.each do |collection|
-        if @config['process_all_collections'] || @config['collections'].include?(collection[1].label)
-          update_collection(collection[1].label)
-        elsif @config['verbose'] > 0
-          puts "Skipping #{collection[1].label} because process_all_collections is false and collection name isn't in config"
+        label = collection[1].label
+        if @config["process_all_collections"] || @config["collections"].include?(label)
+          update_collection(label)
+        elsif @config["verbose"] > 0
+          puts "Skipping #{label} because process_all_collections is false"\
+               " and collection name isn't in config"
         end
       end
     end
 
     def update_collection(collection_name)
       # Make sure that the metadata for this collection says that we're creating output
-      if site.collections[collection_name].metadata["output"] 
-        if @config['verbose'] > 0
+      if site.collections[collection_name].metadata["output"]
+        if @config["verbose"] > 0
           puts "Processing #{collection_name}"
         end
         site.collections[collection_name].docs.each do |page|
           next unless markdown_extension?(page.extname)
           replace_relative_links!(page)
         end
-      else
-        if @config['verbose'] > 0
+      elsif @config["verbose"] > 0
           puts "Skipping #{collection_name} because output is false"
-        end
       end
     end
 
     def replace_relative_links!(page)
-      if @config['verbose'] > 1
+      if @config["verbose"] > 1
         puts "Replacing links in #{page.path}"
       end
       url_base = File.dirname(page.path)
