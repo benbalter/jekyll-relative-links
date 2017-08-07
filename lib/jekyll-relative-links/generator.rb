@@ -11,7 +11,6 @@ module JekyllRelativeLinks
     REFERENCE_LINK_REGEX = %r!^\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
-    MODIFY_CLASSES = [Jekyll::Page, Jekyll::Document]
 
     safe true
     priority :lowest
