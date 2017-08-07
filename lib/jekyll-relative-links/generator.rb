@@ -11,6 +11,7 @@ module JekyllRelativeLinks
     REFERENCE_LINK_REGEX = %r!^\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
+    MODIFY_CLASSES = [Jekyll::Page, Jekyll::Document]
 
     safe true
     priority :lowest
@@ -21,6 +22,14 @@ module JekyllRelativeLinks
     end
 
     def generate(site)
+      # Get any configuration specified
+      # Defaults mean no change in behaviour
+      jrl_config = site.config['jekyll_relative_links'] || {}
+      @config = {}
+      @config['collections'] = jrl_config['collections'] || []
+      @config['process_all_collections'] = jrl_config['process_all_collections'] || false
+      @config['verbose'] = jrl_config['verbose'] || 0
+
       @site    = site
       @context = context
 
@@ -28,9 +37,37 @@ module JekyllRelativeLinks
         next unless markdown_extension?(page.extname)
         replace_relative_links!(page)
       end
+
+      site.collections.each do |collection|
+        if @config['process_all_collections'] || @config['collections'].include?(collection[1].label)
+          update_collection(collection[1].label)
+        elsif @config['verbose'] > 0
+          puts "Skipping #{collection[1].label} because process_all_collections is false and collection name isn't in config"
+        end
+      end
+    end
+
+    def update_collection(collection_name)
+      # Make sure that the metadata for this collection says that we're creating output
+      if site.collections[collection_name].metadata["output"] 
+        if @config['verbose'] > 0
+          puts "Processing #{collection_name}"
+        end
+        site.collections[collection_name].docs.each do |page|
+          next unless markdown_extension?(page.extname)
+          replace_relative_links!(page)
+        end
+      else
+        if @config['verbose'] > 0
+          puts "Skipping #{collection_name} because output is false"
+        end
+      end
     end
 
     def replace_relative_links!(page)
+      if @config['verbose'] > 1
+        puts "Replacing links in #{page.path}"
+      end
       url_base = File.dirname(page.path)
 
       page.content.gsub!(LINK_REGEX) do |original|
@@ -78,7 +115,7 @@ module JekyllRelativeLinks
     end
 
     def potential_targets
-      @potential_targets ||= (site.pages + site.static_files)
+      @potential_targets ||= (site.pages + site.static_files + site.docs_to_write)
     end
 
     def path_from_root(relative_path, url_base)
