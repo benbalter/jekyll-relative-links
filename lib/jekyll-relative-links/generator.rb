@@ -130,9 +130,11 @@ module JekyllRelativeLinks
     # Returns false if the document is part of an unprocessed collection
     # or if the document has a non-markdown extension
     def process_document?(document)
-      return false unless markdown_extension?(document.extname)
-      return true unless document.is_a?(Jekyll::Document)
-      process_collection?(document.collection)
+      if document.is_a?(Jekyll::Document)
+        return false unless process_collection?(document.collection)
+      end
+
+      markdown_extension?(document.extname)
     end
 
     # Returns the relative path to the parent directory of the given document
