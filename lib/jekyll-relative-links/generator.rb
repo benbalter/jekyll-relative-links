@@ -117,6 +117,7 @@ module JekyllRelativeLinks
 
     # Should the given collection be processed?
     def process_collection?(collection)
+      return false if config["collections"].empty?
       collection = collection[1] if collection.is_a? Array
       return false unless config["collections"].include?(collection.label)
       collection.write?
