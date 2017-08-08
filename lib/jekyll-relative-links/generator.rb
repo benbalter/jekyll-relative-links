@@ -11,6 +11,10 @@ module JekyllRelativeLinks
     REFERENCE_LINK_REGEX = %r!^\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
+    DEFAULT_CONFIG = {
+      "collections"     => [],
+      "all_collecitons" => false,
+    }.freeze
 
     safe true
     priority :lowest
@@ -21,52 +25,16 @@ module JekyllRelativeLinks
     end
 
     def generate(site)
-      # Get any configuration specified
-      # Defaults mean no change in behaviour
-      jrl_config = site.config["jekyll_relative_links"] || {}
-      @config = {}
-      @config["collections"] = jrl_config["collections"] || []
-      @config["process_all_collections"] = jrl_config["process_all_collections"] || false
-      @config["verbose"] = jrl_config["verbose"] || 0
-
       @site    = site
       @context = context
 
-      site.pages.each do |page|
-        next unless markdown_extension?(page.extname)
-        replace_relative_links!(page)
-      end
-
-      site.collections.each do |collection|
-        label = collection[1].label
-        if @config["process_all_collections"] || @config["collections"].include?(label)
-          update_collection(label)
-        elsif @config["verbose"] > 0
-          puts "Skipping #{label} because process_all_collections is false"\
-               " and collection name isn't in config"
-        end
-      end
-    end
-
-    def update_collection(collection_name)
-      # Make sure that the metadata for this collection says that we're creating output
-      if site.collections[collection_name].metadata["output"]
-        if @config["verbose"] > 0
-          puts "Processing #{collection_name}"
-        end
-        site.collections[collection_name].docs.each do |page|
-          next unless markdown_extension?(page.extname)
-          replace_relative_links!(page)
-        end
-      elsif @config["verbose"] > 0
-        puts "Skipping #{collection_name} because output is false"
+      (site.pages + site.docs_to_write).each do |document|
+        next unless process_document?(document)
+        replace_relative_links!(document)
       end
     end
 
     def replace_relative_links!(page)
-      if @config["verbose"] > 1
-        puts "Replacing links in #{page.path}"
-      end
       url_base = File.dirname(page.path)
 
       page.content.gsub!(LINK_REGEX) do |original|
@@ -142,6 +110,30 @@ module JekyllRelativeLinks
 
     def fragment?(string)
       string && string.start_with?("#")
+    end
+
+    def config
+      @config ||= DEFAULT_CONFIG.merge(site.config["jekyll_relative_links"] || {})
+    end
+
+    # Should the given collection be processed?
+    def process_collection?(collection)
+      return true if config["all_collections"]
+      return false unless config["collections"].include?(label)
+      return false unless site.collections[collection]
+      site.collections[collection].write?
+    end
+
+    # Should the given document be processed?
+    #
+    # document - Jekyll::Page or Jekyll::Document
+    #
+    # Returns false if the document is part of an unprocessed collection
+    # or if the document has a non-markdown extension
+    def process_document?(document)
+      return false unless markdown_extension?(document.extname)
+      return true unless document.is_a?(Jekyll::Document)
+      process_collection?(document.collection)
     end
   end
 end
