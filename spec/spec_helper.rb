@@ -31,5 +31,5 @@ def fixture_site(fixture, overrides = {})
 end
 
 def page_by_path(site, path)
-  site.pages.find { |p| p.path == path }
+  (site.pages + site.posts).find { |p| p.path == path || p.relative_path == path }
 end
