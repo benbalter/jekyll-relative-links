@@ -33,10 +33,10 @@ module JekyllRelativeLinks
       end
     end
 
-    def replace_relative_links!(page)
-      url_base = File.dirname(page.path)
+    def replace_relative_links!(document)
+      url_base = parent_directory(document)
 
-      page.content.gsub!(LINK_REGEX) do |original|
+      document.content.gsub!(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
         next original if fragment?(relative_path) || absolute_url?(relative_path)
 
@@ -132,6 +132,18 @@ module JekyllRelativeLinks
       return false unless markdown_extension?(document.extname)
       return true unless document.is_a?(Jekyll::Document)
       process_collection?(document.collection)
+    end
+
+    # Returns the relative path to the parent directory of the given document
+    #
+    # For Documents, document#path is absolute, so we must use #relative_path
+    # For Pages, page#path is relative to the site source
+    def parent_directory(document)
+      if document.is_a?(Jekyll::Page)
+        File.dirname(document.path)
+      elsif document.is_a?(Jekyll::Document)
+        File.dirname(document.relative_path)
+      end
     end
   end
 end
