@@ -12,8 +12,7 @@ module JekyllRelativeLinks
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     DEFAULT_CONFIG = {
-      "collections"     => [],
-      "all_collecitons" => false,
+      "collections" => [],
     }.freeze
 
     safe true
@@ -118,10 +117,9 @@ module JekyllRelativeLinks
 
     # Should the given collection be processed?
     def process_collection?(collection)
-      return true if config["all_collections"]
-      return false unless config["collections"].include?(label)
-      return false unless site.collections[collection]
-      site.collections[collection].write?
+      collection = collection[1] if collection.is_a? Array
+      return false unless config["collections"].include?(collection.label)
+      collection.write?
     end
 
     # Should the given document be processed?
