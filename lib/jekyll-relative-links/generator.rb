@@ -11,6 +11,8 @@ module JekyllRelativeLinks
     REFERENCE_LINK_REGEX = %r!^\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
+    CONFIG_KEY = "relative_links".freeze
+    COLLECTIONS_KEY = "collections".freeze
 
     safe true
     priority :lowest
@@ -24,14 +26,17 @@ module JekyllRelativeLinks
       @site    = site
       @context = context
 
-      site.pages.each do |page|
+      pages = site.pages
+      pages = site.pages + site.documents if collections?
+
+      pages.each do |page|
         next unless markdown_extension?(page.extname)
         replace_relative_links!(page)
       end
     end
 
     def replace_relative_links!(page)
-      url_base = File.dirname(page.path)
+      url_base = File.dirname(page.relative_path)
 
       page.content.gsub!(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
@@ -78,7 +83,9 @@ module JekyllRelativeLinks
     end
 
     def potential_targets
-      @potential_targets ||= (site.pages + site.static_files)
+      @potential_targets ||= begin
+        site.pages + site.static_files + (collections? ? site.documents : [])
+      end
     end
 
     def path_from_root(relative_path, url_base)
@@ -102,6 +109,10 @@ module JekyllRelativeLinks
       Addressable::URI.parse(string).absolute?
     rescue Addressable::URI::InvalidURIError
       nil
+    end
+
+    def collections?
+      site.config[CONFIG_KEY] && site.config[CONFIG_KEY][COLLECTIONS_KEY] == true
     end
 
     def fragment?(string)

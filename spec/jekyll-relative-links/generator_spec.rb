@@ -5,6 +5,9 @@ RSpec.describe JekyllRelativeLinks::Generator do
   let(:html_page) { page_by_path(site, "html-page.html") }
   let(:another_page) { page_by_path(site, "another-page.md") }
   let(:subdir_page) { page_by_path(site, "subdir/page.md") }
+  let(:post) { doc_by_path(site, "_posts/2016-01-01-test.md") }
+  let(:subdir_post) { doc_by_path(site, "subdir/_posts/2016-01-01-test.md") }
+  let(:item) { doc_by_path(site, "_items/some-item.md") }
 
   subject { described_class.new(site) }
 
@@ -139,6 +142,64 @@ RSpec.describe JekyllRelativeLinks::Generator do
     context "images" do
       it "handles images" do
         expect(subdir_page.content).to include("![image](/jekyll-logo.png)")
+      end
+    end
+
+    context "collections" do
+      let(:overrides) do
+        {
+          "relative_links" => {
+            "collections" => true,
+          },
+          "collections"    => {
+            "items" => {
+              "permalink" => "/items/:name/",
+              "output"    => true,
+            },
+          },
+        }
+      end
+
+      it "converts relative links" do
+        expect(post.content).to include("[Another Page](/another-page.html)")
+      end
+
+      it "converts relative links with permalinks" do
+        expect(post.content).to include("[Page with permalink](/page-with-permalink/)")
+      end
+
+      it "handles reference links" do
+        expect(post.content).to include("[reference]: /another-page.html")
+      end
+
+      it "converts reference links" do
+        expected = "[reference-with-fragment]: /another-page.html#foo"
+        expect(post.content).to include(expected)
+      end
+
+      it "converts reference links with brackets in fragment" do
+        expected = "[reference-brackets]: /another-page.html#(bar)"
+        expect(post.content).to include(expected)
+      end
+
+      context "posts in subdirs" do
+        it "converts relative links" do
+          expect(subdir_post.content).to include("[Another Page](/another-page.html)")
+        end
+
+        it "converts a link to another post" do
+          expect(subdir_post.content).to include("[Another Post](/2016/01/01/test.html)")
+        end
+      end
+
+      context "items (with output)" do
+        it "converts relative links" do
+          expect(item.content).to include("[Another Page](/another-page.html)")
+        end
+
+        it "can be linked to from other pages" do
+          expect(post.content).to include("[Item](/items/some-item/)")
+        end
       end
     end
   end
