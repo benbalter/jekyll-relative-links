@@ -48,3 +48,42 @@ Because Markdown files rendered by GitHub Pages should behave similar to Markdow
   gems:
     - jekyll-relative-links
   ```
+
+## Configuration
+
+You can configure this plugin in `_config.yml` under the `relative_links` key. This is optional and defaults to:
+
+```yml
+relative_links:
+  collections: false
+  disabled:    false
+```
+
+### Processing Collections
+
+Setting the `collections` option to a truthy value enables relative links to and from collection items (including posts).
+
+Assuming this structure:
+
+~~~
+├── _posts
+│   └── 2016-01-01-test.md
+├── _config.yml
+├── index.md
+└── some-category
+    └── _posts
+        └── 2016-01-01-test.md
+~~~
+
+The following will work:
+
+Link | Within file
+-|-
+`[Index](../index.md)` | `_posts/2016-01-01-test.md`
+`[Index](../../index.md)` | `some-category/_posts/2016-01-01-test.md`
+`[Post 1](_posts/2016-01-01-test.md)` | `index.md`
+`[Post 2](some_category/_posts/2016-01-01-test.md)` | `index.md`
+
+### Disabling
+
+Even if the plugin is enabled (e.g., via the `:jekyll_plugins` group in your Gemfile) you can disable it by setting the `disabled` key.
