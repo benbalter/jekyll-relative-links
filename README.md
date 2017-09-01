@@ -48,3 +48,16 @@ Because Markdown files rendered by GitHub Pages should behave similar to Markdow
   gems:
     - jekyll-relative-links
   ```
+
+## Collection support
+
+Jekyll Relative Links can optionally be enabled on a per-collection basis. To enable relative link support, add the following to your site's `_config.yml` (replacing the collections with your own collections):
+
+```yml
+jekyll_relative_links:
+  collections:
+    - posts
+    - another-collection
+```
+
+*Note: Although you must enable support for rewriting links **within** collection documents (e.g., rewriting a relative link in a Post), you can always link **to** a collection document (e.g., rewriting a link in a Page that targets a Post).*

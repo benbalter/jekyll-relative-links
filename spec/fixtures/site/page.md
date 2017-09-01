@@ -27,6 +27,10 @@
 
 [A first fragment inline](another-page.md#foo) and [a second fragment in the same line](page-with-permalink.md#bar)
 
+[A Post](_posts/2017-01-01-post.md)
+
+---
+
 [reference]: another-page.md
 
 [reference-with-fragment]: another-page.md#foo

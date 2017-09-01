@@ -1,11 +1,12 @@
 RSpec.describe JekyllRelativeLinks::Generator do
-  let(:overrides) { {} }
+  let(:config) { {} }
+  let(:overrides) { { "jekyll_relative_links" => config } }
   let(:site) { fixture_site("site", overrides) }
   let(:page) { page_by_path(site, "page.md") }
   let(:html_page) { page_by_path(site, "html-page.html") }
   let(:another_page) { page_by_path(site, "another-page.md") }
   let(:subdir_page) { page_by_path(site, "subdir/page.md") }
-
+  let(:post) { page_by_path(site, "_posts/2017-01-01-post.md") }
   subject { described_class.new(site) }
 
   before(:each) do
@@ -28,6 +29,24 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
     it "knows the markdown converter" do
       expect(subject.send(:markdown_converter)).to be_a(Jekyll::Converters::Markdown)
+    end
+  end
+
+  context "collections" do
+    context "with no collections specfied" do
+      let(:config) { { "collections" => [] } }
+
+      it "doesn't process posts" do
+        expect(subject.send(:process_collection?, site.collections.first)).to be_falsy
+      end
+    end
+
+    context "with posts specified" do
+      let(:config) { { "collections" => ["posts"] } }
+
+      it "processes posts" do
+        expect(subject.send(:process_collection?, site.collections.first)).to be_truthy
+      end
     end
   end
 
@@ -70,6 +89,10 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
     it "doesn't mangle invalid pages" do
       expect(page.content).to include("[Ghost page](ghost-page.md)")
+    end
+
+    it "rewrites links to documents" do
+      expect(page.content).to include("[A Post](/2017/01/01/post.html)")
     end
 
     context "reference links" do
@@ -139,6 +162,20 @@ RSpec.describe JekyllRelativeLinks::Generator do
     context "images" do
       it "handles images" do
         expect(subdir_page.content).to include("![image](/jekyll-logo.png)")
+      end
+    end
+
+    context "without the posts collection" do
+      it "doesn't mangle posts" do
+        expect(post.content).to include("[Page](../page.md)")
+      end
+    end
+
+    context "with the posts collection" do
+      let(:config) { { "collections" => ["posts"] } }
+
+      it "converts links in posts" do
+        expect(post.content).to include("[Page](/page.html)")
       end
     end
   end
