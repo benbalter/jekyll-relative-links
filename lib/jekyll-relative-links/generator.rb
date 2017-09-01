@@ -12,6 +12,7 @@ module JekyllRelativeLinks
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links".freeze
+    DISABLED_KEY = "disabled".freeze
     COLLECTIONS_KEY = "collections".freeze
 
     safe true
@@ -25,6 +26,7 @@ module JekyllRelativeLinks
     def generate(site)
       @site    = site
       @context = context
+      return if disabled?
 
       pages = site.pages
       pages = site.pages + site.documents if collections?
@@ -111,12 +113,20 @@ module JekyllRelativeLinks
       nil
     end
 
-    def collections?
-      site.config[CONFIG_KEY] && site.config[CONFIG_KEY][COLLECTIONS_KEY] == true
-    end
-
     def fragment?(string)
       string && string.start_with?("#")
+    end
+
+    def option(key)
+      site.config[CONFIG_KEY] && site.config[CONFIG_KEY][key]
+    end
+
+    def disabled?
+      option(DISABLED_KEY)
+    end
+
+    def collections?
+      option(COLLECTIONS_KEY)
     end
   end
 end
