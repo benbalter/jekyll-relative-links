@@ -12,7 +12,7 @@ module JekyllRelativeLinks
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links".freeze
-    DISABLED_KEY = "disabled".freeze
+    ENABLED_KEY = "enabled".freeze
     COLLECTIONS_KEY = "collections".freeze
 
     safe true
@@ -120,7 +120,7 @@ module JekyllRelativeLinks
     end
 
     def disabled?
-      option(DISABLED_KEY)
+      option(ENABLED_KEY) == false
     end
 
     def collections?

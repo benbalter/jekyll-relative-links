@@ -146,7 +146,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
     end
 
     context "disabled" do
-      let(:overrides) { { "relative_links" => { "disabled" => true } } }
+      let(:overrides) { { "relative_links" => { "enabled" => false } } }
 
       it "does not process pages when disabled" do
         expect(page.content).to include("[Another Page](another-page.md)")

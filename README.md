@@ -55,8 +55,8 @@ You can configure this plugin in `_config.yml` under the `relative_links` key. T
 
 ```yml
 relative_links:
+  enabled:     true
   collections: false
-  disabled:    false
 ```
 
 ### Processing Collections
@@ -86,4 +86,4 @@ Link | Within file
 
 ### Disabling
 
-Even if the plugin is enabled (e.g., via the `:jekyll_plugins` group in your Gemfile) you can disable it by setting the `disabled` key.
+Even if the plugin is enabled (e.g., via the `:jekyll_plugins` group in your Gemfile) you can disable it by setting the `enabled` key to `false`.
