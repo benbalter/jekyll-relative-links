@@ -124,7 +124,7 @@ module JekyllRelativeLinks
     end
 
     def collections?
-      option(COLLECTIONS_KEY)
+      option(COLLECTIONS_KEY) == true
     end
   end
 end

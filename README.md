@@ -61,7 +61,7 @@ relative_links:
 
 ### Processing Collections
 
-Setting the `collections` option to a truthy value enables relative links to and from collection items (including posts).
+Setting the `collections` option to `true` enables relative links to and from collection items (including posts).
 
 Assuming this structure:
 
