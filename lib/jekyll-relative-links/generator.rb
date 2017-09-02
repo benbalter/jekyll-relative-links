@@ -85,9 +85,7 @@ module JekyllRelativeLinks
     end
 
     def potential_targets
-      @potential_targets ||= begin
-        site.pages + site.static_files + (collections? ? site.documents : [])
-      end
+      @potential_targets ||= site.pages + site.static_files + site.docs_to_write
     end
 
     def path_from_root(relative_path, url_base)
