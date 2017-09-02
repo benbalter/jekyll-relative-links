@@ -28,19 +28,19 @@ module JekyllRelativeLinks
       @context = context
       return if disabled?
 
-      pages = site.pages
-      pages = site.pages + site.documents if collections?
+      documents = site.pages
+      documents = site.pages + site.docs_to_write if collections?
 
-      pages.each do |page|
-        next unless markdown_extension?(page.extname)
-        replace_relative_links!(page)
+      documents.each do |document|
+        next unless markdown_extension?(document.extname)
+        replace_relative_links!(document)
       end
     end
 
-    def replace_relative_links!(page)
-      url_base = File.dirname(page.relative_path)
+    def replace_relative_links!(document)
+      url_base = File.dirname(document.relative_path)
 
-      page.content.gsub!(LINK_REGEX) do |original|
+      document.content.gsub!(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
         next original if fragment?(relative_path) || absolute_url?(relative_path)
 
