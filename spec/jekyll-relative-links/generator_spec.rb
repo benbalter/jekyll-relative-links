@@ -80,6 +80,10 @@ RSpec.describe JekyllRelativeLinks::Generator do
       it "handles reference links" do
         expect(page.content).to include("[reference]: /another-page.html")
       end
+
+      it "handles indented reference links" do
+        expect(page.content).to include("[indented-reference]: /another-page.html")
+      end
     end
 
     context "with a baseurl" do

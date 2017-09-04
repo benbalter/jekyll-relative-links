@@ -27,8 +27,12 @@
 
 [A first fragment inline](another-page.md#foo) and [a second fragment in the same line](page-with-permalink.md#bar)
 
+[A indented reference][indented-reference]
+
 [reference]: another-page.md
 
 [reference-with-fragment]: another-page.md#foo
 
 [reference-brackets]: another-page.md#(bar)
+
+  [indented-reference]: another-page.md
