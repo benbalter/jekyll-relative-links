@@ -8,6 +8,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
   let(:post) { doc_by_path(site, "_posts/2016-01-01-test.md") }
   let(:subdir_post) { doc_by_path(site, "subdir/_posts/2016-01-01-test.md") }
   let(:item) { doc_by_path(site, "_items/some-item.md") }
+  let(:item_2) { doc_by_path(site, "_items/some-subdir/another-item.md") }
 
   subject { described_class.new(site) }
 
@@ -203,6 +204,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
       context "items (with output)" do
         it "converts relative links" do
           expect(item.content).to include("[Another Page](/another-page.html)")
+          expect(item_2.content).to include("[Another Page](/another-page.html)")
         end
 
         it "can be linked to from other pages" do

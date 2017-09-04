@@ -61,28 +61,25 @@ relative_links:
 
 ### Processing Collections
 
-Setting the `collections` option to `true` enables relative links to and from collection items (including posts).
+Setting the `collections` option to `true` enables relative links from collection items (including posts).
 
-Assuming this structure:
+Assuming this structure
 
 ~~~
-├── _posts
-│   └── 2016-01-01-test.md
+├── _my_collection
+│   ├── some_doc.md
+│   └── some_subdir
+│       └── another_doc.md
 ├── _config.yml
-├── index.md
-└── some-category
-    └── _posts
-        └── 2016-01-01-test.md
+└── index.md
 ~~~
 
-The following will work:
+the following will work:
 
-Link | Within file
+File | Link
 -|-
-`[Index](../index.md)` | `_posts/2016-01-01-test.md`
-`[Index](../../index.md)` | `some-category/_posts/2016-01-01-test.md`
-`[Post 1](_posts/2016-01-01-test.md)` | `index.md`
-`[Post 2](some_category/_posts/2016-01-01-test.md)` | `index.md`
+`_my_collection/some_doc.md` | `[Index](../index.md)`
+`_my_collection/some_subdir/another_doc.md` | `[Index](../../index.md)`
 
 ### Disabling
 
