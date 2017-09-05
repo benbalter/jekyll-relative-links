@@ -5,6 +5,10 @@ RSpec.describe JekyllRelativeLinks::Generator do
   let(:html_page) { page_by_path(site, "html-page.html") }
   let(:another_page) { page_by_path(site, "another-page.md") }
   let(:subdir_page) { page_by_path(site, "subdir/page.md") }
+  let(:post) { doc_by_path(site, "_posts/2016-01-01-test.md") }
+  let(:subdir_post) { doc_by_path(site, "subdir/_posts/2016-01-01-test.md") }
+  let(:item) { doc_by_path(site, "_items/some-item.md") }
+  let(:item_2) { doc_by_path(site, "_items/some-subdir/another-item.md") }
 
   subject { described_class.new(site) }
 
@@ -76,6 +80,10 @@ RSpec.describe JekyllRelativeLinks::Generator do
       it "handles reference links" do
         expect(page.content).to include("[reference]: /another-page.html")
       end
+
+      it "handles indented reference links" do
+        expect(page.content).to include("[indented-reference]: /another-page.html")
+      end
     end
 
     context "with a baseurl" do
@@ -139,6 +147,90 @@ RSpec.describe JekyllRelativeLinks::Generator do
     context "images" do
       it "handles images" do
         expect(subdir_page.content).to include("![image](/jekyll-logo.png)")
+      end
+    end
+
+    context "disabled" do
+      let(:overrides) { { "relative_links" => { "enabled" => false } } }
+
+      it "does not process pages when disabled" do
+        expect(page.content).to include("[Another Page](another-page.md)")
+      end
+    end
+
+    context "collections" do
+      let(:overrides) do
+        {
+          "relative_links" => {
+            "collections" => true,
+          },
+          "collections"    => {
+            "items" => {
+              "permalink" => "/items/:name/",
+              "output"    => true,
+            },
+          },
+        }
+      end
+
+      it "converts relative links from pages to posts" do
+        expect(page.content).to include("[A post](/2016/01/01/test.html)")
+      end
+
+      it "converts relative links from posts to pages" do
+        expect(post.content).to include("[Another Page](/another-page.html)")
+      end
+
+      it "converts relative links with permalinks from posts pages " do
+        expect(post.content).to include("[Page with permalink](/page-with-permalink/)")
+      end
+
+      it "handles reference links from posts to pages" do
+        expect(post.content).to include("[reference]: /another-page.html")
+      end
+
+      it "converts reference links" do
+        expected = "[reference-with-fragment]: /another-page.html#foo"
+        expect(post.content).to include(expected)
+      end
+
+      it "converts reference links with brackets in fragment" do
+        expected = "[reference-brackets]: /another-page.html#(bar)"
+        expect(post.content).to include(expected)
+      end
+
+      context "posts in subdirs" do
+        it "converts relative links from pages to posts" do
+          expect(page.content).to include("[Another post](/subdir/2016/01/01/test.html)")
+        end
+
+        it "converts relative links from posts to pages" do
+          expect(subdir_post.content).to include("[Another Page](/another-page.html)")
+        end
+
+        it "converts relative links from posts to posts" do
+          expect(subdir_post.content).to include("[Another Post](/2016/01/01/test.html)")
+        end
+      end
+
+      context "items (with output)" do
+        it "converts relative links from pages to items" do
+          expect(page.content).to include("[An item](/items/some-item/)")
+          expect(page.content).to include("[Another item](/items/another-item/)")
+        end
+
+        it "converts relative links from items to pages" do
+          expect(item.content).to include("[Another Page](/another-page.html)")
+          expect(item_2.content).to include("[Another Page](/another-page.html)")
+        end
+
+        it "converts relative links from posts to items" do
+          expect(post.content).to include("[Item](/items/some-item/)")
+        end
+
+        it "converts relative links from items to posts" do
+          expect(item.content).to include("[A post](/2016/01/01/test.html)")
+        end
       end
     end
   end

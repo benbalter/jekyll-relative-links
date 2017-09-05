@@ -8,9 +8,12 @@ module JekyllRelativeLinks
     LINK_TEXT_REGEX = %r!([^\]]+)!
     FRAGMENT_REGEX = %r!(#.+?)?!
     INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
-    REFERENCE_LINK_REGEX = %r!^\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
+    REFERENCE_LINK_REGEX = %r!^\s*\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
+    CONFIG_KEY = "relative_links".freeze
+    ENABLED_KEY = "enabled".freeze
+    COLLECTIONS_KEY = "collections".freeze
 
     safe true
     priority :lowest
@@ -23,17 +26,21 @@ module JekyllRelativeLinks
     def generate(site)
       @site    = site
       @context = context
+      return if disabled?
 
-      site.pages.each do |page|
-        next unless markdown_extension?(page.extname)
-        replace_relative_links!(page)
+      documents = site.pages
+      documents = site.pages + site.docs_to_write if collections?
+
+      documents.each do |document|
+        next unless markdown_extension?(document.extname)
+        replace_relative_links!(document)
       end
     end
 
-    def replace_relative_links!(page)
-      url_base = File.dirname(page.path)
+    def replace_relative_links!(document)
+      url_base = File.dirname(document.relative_path)
 
-      page.content.gsub!(LINK_REGEX) do |original|
+      document.content.gsub!(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
         next original if fragment?(relative_path) || absolute_url?(relative_path)
 
@@ -78,7 +85,7 @@ module JekyllRelativeLinks
     end
 
     def potential_targets
-      @potential_targets ||= (site.pages + site.static_files)
+      @potential_targets ||= site.pages + site.static_files + site.docs_to_write
     end
 
     def path_from_root(relative_path, url_base)
@@ -106,6 +113,18 @@ module JekyllRelativeLinks
 
     def fragment?(string)
       string && string.start_with?("#")
+    end
+
+    def option(key)
+      site.config[CONFIG_KEY] && site.config[CONFIG_KEY][key]
+    end
+
+    def disabled?
+      option(ENABLED_KEY) == false
+    end
+
+    def collections?
+      option(COLLECTIONS_KEY) == true
     end
   end
 end
