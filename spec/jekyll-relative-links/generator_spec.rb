@@ -173,15 +173,19 @@ RSpec.describe JekyllRelativeLinks::Generator do
         }
       end
 
-      it "converts relative links" do
+      it "converts relative links from pages to posts" do
+        expect(page.content).to include("[A post](/2016/01/01/test.html)")
+      end
+
+      it "converts relative links from posts to pages" do
         expect(post.content).to include("[Another Page](/another-page.html)")
       end
 
-      it "converts relative links with permalinks" do
+      it "converts relative links with permalinks from posts pages " do
         expect(post.content).to include("[Page with permalink](/page-with-permalink/)")
       end
 
-      it "handles reference links" do
+      it "handles reference links from posts to pages" do
         expect(post.content).to include("[reference]: /another-page.html")
       end
 
@@ -196,23 +200,36 @@ RSpec.describe JekyllRelativeLinks::Generator do
       end
 
       context "posts in subdirs" do
-        it "converts relative links" do
+        it "converts relative links from pages to posts" do
+          expect(page.content).to include("[Another post](/subdir/2016/01/01/test.html)")
+        end
+
+        it "converts relative links from posts to pages" do
           expect(subdir_post.content).to include("[Another Page](/another-page.html)")
         end
 
-        it "converts a link to another post" do
+        it "converts relative links from posts to posts" do
           expect(subdir_post.content).to include("[Another Post](/2016/01/01/test.html)")
         end
       end
 
       context "items (with output)" do
-        it "converts relative links" do
+        it "converts relative links from pages to items" do
+          expect(page.content).to include("[An item](/items/some-item/)")
+          expect(page.content).to include("[Another item](/items/another-item/)")
+        end
+
+        it "converts relative links from items to pages" do
           expect(item.content).to include("[Another Page](/another-page.html)")
           expect(item_2.content).to include("[Another Page](/another-page.html)")
         end
 
-        it "can be linked to from other pages" do
+        it "converts relative links from posts to items" do
           expect(post.content).to include("[Item](/items/some-item/)")
+        end
+
+        it "converts relative links from items to posts" do
+          expect(item.content).to include("[A post](/2016/01/01/test.html)")
         end
       end
     end
