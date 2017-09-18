@@ -5,10 +5,9 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    LINK_TEXT_REGEX = %r!([^\]]+)!
     FRAGMENT_REGEX = %r!(#.+?)?!
-    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
-    REFERENCE_LINK_REGEX = %r!^\s*\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
+    INLINE_LINK_REGEX = %r!\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
+    REFERENCE_LINK_REGEX = %r!\]: (.+?)#{FRAGMENT_REGEX}\s*$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links".freeze
@@ -41,14 +40,14 @@ module JekyllRelativeLinks
       url_base = File.dirname(document.relative_path)
 
       document.content.gsub!(LINK_REGEX) do |original|
-        link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
+        link_type, relative_path, fragment = link_parts(Regexp.last_match)
         next original if fragment?(relative_path) || absolute_url?(relative_path)
 
         path = path_from_root(relative_path, url_base)
         url  = url_for_path(path)
 
         if url
-          replacement_text(link_type, link_text, url, fragment)
+          replacement_text(link_type, url, fragment)
         else
           original
         end
@@ -61,10 +60,9 @@ module JekyllRelativeLinks
 
     def link_parts(matches)
       link_type     = matches[2] ? :inline : :reference
-      link_text     = matches[link_type == :inline ? 2 : 5]
-      relative_path = matches[link_type == :inline ? 3 : 6]
-      fragment      = matches[link_type == :inline ? 4 : 7]
-      [link_type, link_text, relative_path, fragment]
+      relative_path = matches[link_type == :inline ? 2 : 4]
+      fragment      = matches[link_type == :inline ? 3 : 5]
+      [link_type, relative_path, fragment]
     end
 
     def context
@@ -94,13 +92,13 @@ module JekyllRelativeLinks
       absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
     end
 
-    def replacement_text(type, text, url, fragment = nil)
+    def replacement_text(type, url, fragment = nil)
       url << fragment if fragment
 
       if type == :inline
-        "[#{text}](#{url})"
+        "](#{url})"
       else
-        "[#{text}]: #{url}"
+        "]: #{url}"
       end
     end
 
