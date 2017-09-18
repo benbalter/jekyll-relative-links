@@ -150,11 +150,13 @@ RSpec.describe JekyllRelativeLinks::Generator do
       end
 
       it "handles linked images" do
-        expect(subdir_page.content).to include("[![linked image](/jekyll-logo.png)](/page.html)")
+        expected = "[![linked image](/jekyll-logo.png)](/page.html)"
+        expect(subdir_page.content).to include(expected)
       end
 
       it "handles reference linked images" do
-        expect(subdir_page.content).to include("[![reference linked image](/jekyll-logo.png)][reference]")
+        expected = "[![reference linked image](/jekyll-logo.png)][reference]"
+        expect(subdir_page.content).to include(expected)
         expect(subdir_page.content).to include("[reference]: /page.html")
       end
     end
