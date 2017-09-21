@@ -8,7 +8,7 @@ module JekyllRelativeLinks
     LINK_TEXT_REGEX = %r!([^\]]+)!
     FRAGMENT_REGEX = %r!(#.+?)?!
     INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
-    REFERENCE_LINK_REGEX = %r!^\s*\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}$!
+    REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}\s*?$!
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links".freeze
@@ -100,7 +100,7 @@ module JekyllRelativeLinks
       if type == :inline
         "[#{text}](#{url})"
       else
-        "[#{text}]: #{url}"
+        "\n[#{text}]: #{url}"
       end
     end
 
