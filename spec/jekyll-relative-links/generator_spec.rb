@@ -84,6 +84,16 @@ RSpec.describe JekyllRelativeLinks::Generator do
       it "handles indented reference links" do
         expect(page.content).to include("[indented-reference]: /another-page.html")
       end
+
+      it "handles reference links with trailing whitespace" do
+        expected = "[reference-with-whitespace]: /another-page.html"
+        expect(page.content).to include(expected)
+      end
+
+      it "leaves newlines intact" do
+        expected = "\n\nContent end\n\n[reference]: /another-page.html\n\n"
+        expect(page.content).to include(expected)
+      end
     end
 
     context "with a baseurl" do
