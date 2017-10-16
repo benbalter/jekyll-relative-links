@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe JekyllRelativeLinks::Generator do
   let(:overrides) { {} }
   let(:site) { fixture_site("site", overrides) }

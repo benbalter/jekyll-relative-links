@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JekyllRelativeLinks
   class Generator < Jekyll::Generator
     attr_accessor :site
