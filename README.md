@@ -78,8 +78,13 @@ the following will work:
 
 File | Link
 -|-
+`index.md` | `[Some Doc](_my_collection/some_doc.md)`
+`index.md` | `[Another Doc](_my_collection/some_subdir/another_doc.md)`
 `_my_collection/some_doc.md` | `[Index](../index.md)`
+`_my_collection/some_doc.md` | `[Another Doc](some_subdir/another_doc.md)`
 `_my_collection/some_subdir/another_doc.md` | `[Index](../../index.md)`
+`_my_collection/some_subdir/another_doc.md` | `[Some Doc](../some_doc.md)`
+
 
 ### Disabling
 
