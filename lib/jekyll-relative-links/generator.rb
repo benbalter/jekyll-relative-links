@@ -35,6 +35,7 @@ module JekyllRelativeLinks
 
       documents.each do |document|
         next unless markdown_extension?(document.extname)
+        next if document.is_a?(Jekyll::StaticFile)
         replace_relative_links!(document)
       end
     end
