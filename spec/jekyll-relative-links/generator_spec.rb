@@ -246,4 +246,12 @@ RSpec.describe JekyllRelativeLinks::Generator do
       end
     end
   end
+
+  context "a page without content" do
+    before { page_by_path(site, "page.md").content = nil }
+
+    it "doesn't error out" do
+      expect { subject.generate(site) }.to_not raise_error
+    end
+  end
 end
