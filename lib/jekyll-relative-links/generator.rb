@@ -44,8 +44,7 @@ module JekyllRelativeLinks
       url_base = File.dirname(document.relative_path)
       return document if document.content.nil?
 
-      content = document.content.dup
-      content.gsub!(LINK_REGEX) do |original|
+      document.content = document.content.dup.gsub(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
         next original if fragment?(relative_path) || absolute_url?(relative_path)
 
@@ -58,7 +57,6 @@ module JekyllRelativeLinks
           original
         end
       end
-      document.content = content
     rescue ArgumentError => e
       raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
     end
