@@ -43,6 +43,7 @@ module JekyllRelativeLinks
     def replace_relative_links!(document)
       url_base = File.dirname(document.relative_path)
       return document if document.content.nil?
+
       document.content = document.content.dup.gsub(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
         next original if fragment?(relative_path) || absolute_url?(relative_path)
