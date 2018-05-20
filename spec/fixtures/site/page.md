@@ -39,6 +39,8 @@
 
 [[A link with square brackets]](another-page.md)
 
+[\[A link with escaped square brackets\]](/another-page.md)
+
 Content end
 
 [reference]: another-page.md
