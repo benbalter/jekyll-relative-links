@@ -37,6 +37,8 @@
 
 [Another item](_items/some-subdir/another-item.md)
 
+[[A link with square brackets]](another-page.md)
+
 Content end
 
 [reference]: another-page.md
