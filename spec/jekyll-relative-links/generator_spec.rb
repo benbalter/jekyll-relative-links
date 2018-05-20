@@ -78,6 +78,11 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include("[Ghost page](ghost-page.md)")
     end
 
+    it "handles links with nested square brackets" do
+      expected = "[[A link with square brackets]](/another-page.html)"
+      expect(page.content).to include(expected)
+    end
+
     context "reference links" do
       it "handles reference links" do
         expect(page.content).to include("[reference]: /another-page.html")
