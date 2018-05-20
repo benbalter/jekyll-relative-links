@@ -7,7 +7,7 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    LINK_TEXT_REGEX = %r!([^\]]+)!
+    LINK_TEXT_REGEX = %r!([^\]]+|.*)!
     FRAGMENT_REGEX = %r!(#.+?)?!
     INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
     REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}\s*?$!
@@ -43,7 +43,6 @@ module JekyllRelativeLinks
     def replace_relative_links!(document)
       url_base = File.dirname(document.relative_path)
       return document if document.content.nil?
-
       document.content = document.content.dup.gsub(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
         next original if fragment?(relative_path) || absolute_url?(relative_path)
