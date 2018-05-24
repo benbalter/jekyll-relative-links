@@ -30,6 +30,9 @@ permalink: /bar/
 
 Then `[foo](bar.md)` will render as `[foo](/bar/)`.
 
+The default Jekyll's configuration `permalink: pretty` in the `_config.yaml`
+file removes the `.html` extensions from the generated links.
+
 ## Why
 
 Because Markdown files rendered by GitHub Pages should behave similar to Markdown files rendered on GitHub.com
