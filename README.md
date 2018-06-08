@@ -48,9 +48,10 @@ Because Markdown files rendered by GitHub Pages should behave similar to Markdow
 2. Add the following to your site's config file:
 
   ```yml
-  gems:
+  plugins:
     - jekyll-relative-links
   ```
+  Note: If you are using a Jekyll version less than 3.5.0, use the `gems` key instead of `plugins`.
 
 ## Configuration
 
