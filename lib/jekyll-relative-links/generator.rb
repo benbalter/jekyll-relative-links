@@ -34,6 +34,16 @@ module JekyllRelativeLinks
       documents = site.pages + site.docs_to_write if collections?
 
       documents.each do |document|
+        def excluded?(entry)
+          glob_include?(site.jekyll_relative_links.exclude, relative_to_source(entry)).tap do |excluded|
+            if excluded
+              Jekyll.logger.debug(
+                "EntryFilter:",
+                "excluded #{relative_to_source(entry)}"
+              )
+            end
+          end
+        end
         next unless markdown_extension?(document.extname)
         next if document.is_a?(Jekyll::StaticFile)
         replace_relative_links!(document)
