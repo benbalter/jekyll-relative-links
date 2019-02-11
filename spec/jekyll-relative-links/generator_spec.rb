@@ -189,7 +189,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
       let(:plugin_config) { { "collections" => true } }
       let(:overrides) do
         {
-          "collections"    => {
+          "collections" => {
             "items" => {
               "permalink" => "/items/:name/",
               "output"    => true,
@@ -263,7 +263,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
           [
             "another-page.md",
             "_posts/2016-01-01-test.md",
-            "_items/some-subdir/another-item.md"
+            "_items/some-subdir/another-item.md",
           ]
         end
         let(:plugin_config) { { "collections" => true, "exclude" => excludes } }

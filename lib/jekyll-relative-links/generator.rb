@@ -37,7 +37,7 @@ module JekyllRelativeLinks
         next unless markdown_extension?(document.extname)
         next if document.is_a?(Jekyll::StaticFile)
         next if excluded?(document)
-        
+
         replace_relative_links!(document)
       end
     end
@@ -138,20 +138,18 @@ module JekyllRelativeLinks
       return false unless option("exclude")
 
       entry_filter = if document.respond_to?(:collection)
-        document.collection.entry_filter
-      else
-        global_entry_filter
-      end
+                       document.collection.entry_filter
+                     else
+                       global_entry_filter
+                     end
 
       entry_filter.glob_include?(option("exclude"), document.relative_path).tap do |excluded|
-        if excluded
-          Jekyll.logger.debug("EntryFilter:", "excluded #{document.relative_path}")
-        end
+        Jekyll.logger.debug("EntryFilter:", "excluded #{document.relative_path}") if excluded
       end
     end
 
     def global_entry_filter
-      @entry_filter ||= Jekyll::EntryFilter.new(@site)
+      @global_entry_filter ||= Jekyll::EntryFilter.new(@site)
     end
   end
 end
