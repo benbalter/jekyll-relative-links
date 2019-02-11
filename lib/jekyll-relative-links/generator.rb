@@ -2,7 +2,7 @@
 
 module JekyllRelativeLinks
   class Generator < Jekyll::Generator
-    attr_accessor :site
+    attr_accessor :site, :config
 
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
@@ -16,20 +16,20 @@ module JekyllRelativeLinks
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
     COLLECTIONS_KEY = "collections"
-    LOG_KEY = "JekyllRelativeLinks:"
+    LOG_KEY = "Relative Links:"
 
     safe true
     priority :lowest
 
-    def initialize(site)
-      @site    = site
-      @context = context
+    def initialize(config)
+      @config = config
     end
 
     def generate(site)
+      return if disabled?
+
       @site    = site
       @context = context
-      return if disabled?
 
       documents = site.pages
       documents = site.pages + site.docs_to_write if collections?
@@ -124,7 +124,7 @@ module JekyllRelativeLinks
     end
 
     def option(key)
-      site.config[CONFIG_KEY] && site.config[CONFIG_KEY][key]
+      config[CONFIG_KEY] && config[CONFIG_KEY][key]
     end
 
     def disabled?
@@ -150,7 +150,7 @@ module JekyllRelativeLinks
     end
 
     def global_entry_filter
-      @global_entry_filter ||= Jekyll::EntryFilter.new(@site)
+      @global_entry_filter ||= Jekyll::EntryFilter.new(site)
     end
   end
 end

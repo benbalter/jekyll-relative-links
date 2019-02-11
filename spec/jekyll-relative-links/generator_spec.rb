@@ -17,18 +17,20 @@ RSpec.describe JekyllRelativeLinks::Generator do
   let(:item) { doc_by_path(site, "_items/some-item.md") }
   let(:item_2) { doc_by_path(site, "_items/some-subdir/another-item.md") }
 
-  subject { described_class.new(site) }
+  subject { described_class.new(site.config) }
 
   before(:each) do
     site.reset
     site.read
   end
 
-  it "saves the site" do
-    expect(subject.site).to eql(site)
+  it "saves the config" do
+    expect(subject.config).to eql(site.config)
   end
 
   context "detecting markdown" do
+    before { subject.instance_variable_set "@site", site }
+
     it "knows when an extension is markdown" do
       expect(subject.send(:markdown_extension?, ".md")).to eql(true)
     end
