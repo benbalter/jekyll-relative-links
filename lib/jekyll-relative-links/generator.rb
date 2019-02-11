@@ -16,6 +16,7 @@ module JekyllRelativeLinks
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
     COLLECTIONS_KEY = "collections"
+    LOG_KEY = "JekyllRelativeLinks:"
 
     safe true
     priority :lowest
@@ -144,7 +145,7 @@ module JekyllRelativeLinks
                      end
 
       entry_filter.glob_include?(option("exclude"), document.relative_path).tap do |excluded|
-        Jekyll.logger.debug("EntryFilter:", "excluded #{document.relative_path}") if excluded
+        Jekyll.logger.debug(LOG_KEY, "excluded #{document.relative_path}") if excluded
       end
     end
 
