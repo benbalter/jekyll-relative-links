@@ -49,16 +49,13 @@ module JekyllRelativeLinks
 
       document.content = document.content.dup.gsub(LINK_REGEX) do |original|
         link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
-        next original if fragment?(relative_path) || absolute_url?(relative_path)
+        next original unless replaceable_link?(relative_path)
 
         path = path_from_root(relative_path, url_base)
         url  = url_for_path(path)
+        next original unless url
 
-        if url
-          replacement_text(link_type, link_text, url, fragment)
-        else
-          original
-        end
+        replacement_text(link_type, link_text, url, fragment)
       end
     rescue ArgumentError => e
       raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
@@ -121,6 +118,10 @@ module JekyllRelativeLinks
 
     def fragment?(string)
       string&.start_with?("#")
+    end
+
+    def replaceable_link?(string)
+      !fragment?(string) && !absolute_url?(string)
     end
 
     def option(key)

@@ -9,12 +9,3 @@ AllCops:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
-
-Metrics/PerceivedComplexity:
-  Enabled: false
-
-Metrics/AbcSize:
-  Enabled: false
-
-Metrics/CyclomaticComplexity:
-  Enabled: false
