@@ -63,6 +63,17 @@ relative_links:
   collections: false
 ```
 
+### Excluding files
+
+To exclude specific directories and/or files:
+
+```yml
+relative_links:
+  exclude:
+    - directory
+    - file.md
+```
+
 ### Processing Collections
 
 Setting the `collections` option to `true` enables relative links from collection items (including posts).
