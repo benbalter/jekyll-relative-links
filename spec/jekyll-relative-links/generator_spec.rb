@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe JekyllRelativeLinks::Generator do
+  let(:site_config) do
+    overrides["relative_links"] = plugin_config if plugin_config
+    overrides
+  end
   let(:overrides) { {} }
-  let(:site) { fixture_site("site", overrides) }
+  let(:plugin_config) { nil }
+  let(:site) { fixture_site("site", site_config) }
   let(:page) { page_by_path(site, "page.md") }
   let(:html_page) { page_by_path(site, "html-page.html") }
   let(:another_page) { page_by_path(site, "another-page.md") }
@@ -173,7 +178,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
     end
 
     context "disabled" do
-      let(:overrides) { { "relative_links" => { "enabled" => false } } }
+      let(:plugin_config) { { "enabled" => false } }
 
       it "does not process pages when disabled" do
         expect(page.content).to include("[Another Page](another-page.md)")
@@ -181,11 +186,9 @@ RSpec.describe JekyllRelativeLinks::Generator do
     end
 
     context "collections" do
+      let(:plugin_config) { { "collections" => true } }
       let(:overrides) do
         {
-          "relative_links" => {
-            "collections" => true,
-          },
           "collections"    => {
             "items" => {
               "permalink" => "/items/:name/",
@@ -252,6 +255,47 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
         it "converts relative links from items to posts" do
           expect(item.content).to include("[A post](/2016/01/01/test.html)")
+        end
+      end
+
+      context "excludes" do
+        let(:excludes) do
+          [
+            "another-page.md",
+            "_posts/2016-01-01-test.md",
+            "_items/some-subdir/another-item.md"
+          ]
+        end
+        let(:plugin_config) { { "collections" => true, "exclude" => excludes } }
+
+        context "pages" do
+          it "includes included pages" do
+            expect(page.content).to include("[Another Page](/another-page.html)")
+          end
+
+          it "excludes excluded pages" do
+            expect(another_page.content).to include("[Page](page.md)")
+          end
+        end
+
+        context "posts" do
+          it "includes included posts" do
+            expect(subdir_post.content).to include("[Another Page](/another-page.html)")
+          end
+
+          it "excludes excluded posts" do
+            expect(post.content).to include("[Another Page](../another-page.md)")
+          end
+        end
+
+        context "collections" do
+          it "includes included documents" do
+            expect(item.content).to include("[Another Page](/another-page.html)")
+          end
+
+          it "excludes excluded documents" do
+            expect(item_2.content).to include("[Another Page](../../another-page.md)")
+          end
         end
       end
     end

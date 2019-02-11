@@ -134,7 +134,7 @@ module JekyllRelativeLinks
 
     def excluded?(document)
       return false unless option("exclude")
-      
+
       entry_filter = if document.respond_to?(:collection)
         document.collection.entry_filter
       else
@@ -143,7 +143,7 @@ module JekyllRelativeLinks
 
       entry_filter.glob_include?(option("exclude"), document.relative_path).tap do |excluded|
         if excluded
-          Jekyll.logger.debug("EntryFilter:", "excluded #{relative_to_source(document)}")
+          Jekyll.logger.debug("EntryFilter:", "excluded #{document.relative_path}")
         end
       end
     end
