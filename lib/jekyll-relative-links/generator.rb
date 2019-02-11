@@ -7,15 +7,15 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    LINK_TEXT_REGEX = %r!(.*?)!
-    FRAGMENT_REGEX = %r!(#.+?)?!
-    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!
-    REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}\s*?$!
-    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!
+    LINK_TEXT_REGEX = %r!(.*?)!.freeze
+    FRAGMENT_REGEX = %r!(#.+?)?!.freeze
+    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!.freeze
+    REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}\s*?$!.freeze
+    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!.freeze
     CONVERTER_CLASS = Jekyll::Converters::Markdown
-    CONFIG_KEY = "relative_links".freeze
-    ENABLED_KEY = "enabled".freeze
-    COLLECTIONS_KEY = "collections".freeze
+    CONFIG_KEY = "relative_links"
+    ENABLED_KEY = "enabled"
+    COLLECTIONS_KEY = "collections"
 
     safe true
     priority :lowest
@@ -37,6 +37,7 @@ module JekyllRelativeLinks
         next unless markdown_extension?(document.extname)
         next if document.is_a?(Jekyll::StaticFile)
         next if excluded?(document)
+        
         replace_relative_links!(document)
       end
     end
@@ -86,7 +87,7 @@ module JekyllRelativeLinks
 
     def url_for_path(path)
       target = potential_targets.find { |p| p.relative_path.sub(%r!\A/!, "") == path }
-      relative_url(target.url) if target && target.url
+      relative_url(target.url) if target&.url
     end
 
     def potential_targets
@@ -111,13 +112,14 @@ module JekyllRelativeLinks
 
     def absolute_url?(string)
       return unless string
+
       Addressable::URI.parse(string).absolute?
     rescue Addressable::URI::InvalidURIError
       nil
     end
 
     def fragment?(string)
-      string && string.start_with?("#")
+      string&.start_with?("#")
     end
 
     def option(key)
