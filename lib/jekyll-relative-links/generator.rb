@@ -34,18 +34,9 @@ module JekyllRelativeLinks
       documents = site.pages + site.docs_to_write if collections?
 
       documents.each do |document|
-        def excluded?(entry)
-          glob_include?(site.jekyll_relative_links.exclude, relative_to_source(entry)).tap do |excluded|
-            if excluded
-              Jekyll.logger.debug(
-                "EntryFilter:",
-                "excluded #{relative_to_source(entry)}"
-              )
-            end
-          end
-        end
         next unless markdown_extension?(document.extname)
         next if document.is_a?(Jekyll::StaticFile)
+        next if excluded?(document)
         replace_relative_links!(document)
       end
     end
@@ -82,7 +73,7 @@ module JekyllRelativeLinks
     end
 
     def context
-      JekyllRelativeLinks::Context.new(site)
+      @context ||= JekyllRelativeLinks::Context.new(site)
     end
 
     def markdown_extension?(extension)
@@ -139,6 +130,26 @@ module JekyllRelativeLinks
 
     def collections?
       option(COLLECTIONS_KEY) == true
+    end
+
+    def excluded?(document)
+      return false unless option("exclude")
+      
+      entry_filter = if document.respond_to?(:collection)
+        document.collection.entry_filter
+      else
+        global_entry_filter
+      end
+
+      entry_filter.glob_include?(option("exclude"), document.relative_path).tap do |excluded|
+        if excluded
+          Jekyll.logger.debug("EntryFilter:", "excluded #{relative_to_source(document)}")
+        end
+      end
+    end
+
+    def global_entry_filter
+      @entry_filter ||= Jekyll::EntryFilter.new(@site)
     end
   end
 end
