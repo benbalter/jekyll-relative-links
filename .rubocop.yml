@@ -1,5 +1,6 @@
+require: rubocop-jekyll
 inherit_gem:
-  jekyll: .rubocop.yml
+  rubocop-jekyll: .rubocop.yml
 
 AllCops:
   Exclude:
@@ -13,4 +14,7 @@ Metrics/PerceivedComplexity:
   Enabled: false
 
 Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
   Enabled: false

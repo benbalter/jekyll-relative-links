@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("lib", __dir__)
 require "jekyll-relative-links/version"
 
 Gem::Specification.new do |s|
@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
   s.add_dependency "jekyll", "~> 3.3"
   s.add_development_dependency "rspec", "~> 3.5"
   s.add_development_dependency "rubocop", "~> 0.43"
+  s.add_development_dependency "rubocop-jekyll", "~> 0.7.0"
 end
