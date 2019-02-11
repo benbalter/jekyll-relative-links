@@ -2,7 +2,7 @@
 
 module JekyllRelativeLinks
   class Generator < Jekyll::Generator
-    attr_accessor :site
+    attr_accessor :site, :config
 
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
@@ -16,19 +16,20 @@ module JekyllRelativeLinks
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
     COLLECTIONS_KEY = "collections"
+    LOG_KEY = "Relative Links:"
 
     safe true
     priority :lowest
 
-    def initialize(site)
-      @site    = site
-      @context = context
+    def initialize(config)
+      @config = config
     end
 
     def generate(site)
+      return if disabled?
+
       @site    = site
       @context = context
-      return if disabled?
 
       documents = site.pages
       documents = site.pages + site.docs_to_write if collections?
@@ -36,6 +37,7 @@ module JekyllRelativeLinks
       documents.each do |document|
         next unless markdown_extension?(document.extname)
         next if document.is_a?(Jekyll::StaticFile)
+        next if excluded?(document)
 
         replace_relative_links!(document)
       end
@@ -73,7 +75,7 @@ module JekyllRelativeLinks
     end
 
     def context
-      JekyllRelativeLinks::Context.new(site)
+      @context ||= JekyllRelativeLinks::Context.new(site)
     end
 
     def markdown_extension?(extension)
@@ -122,7 +124,7 @@ module JekyllRelativeLinks
     end
 
     def option(key)
-      site.config[CONFIG_KEY] && site.config[CONFIG_KEY][key]
+      config[CONFIG_KEY] && config[CONFIG_KEY][key]
     end
 
     def disabled?
@@ -131,6 +133,24 @@ module JekyllRelativeLinks
 
     def collections?
       option(COLLECTIONS_KEY) == true
+    end
+
+    def excluded?(document)
+      return false unless option("exclude")
+
+      entry_filter = if document.respond_to?(:collection)
+                       document.collection.entry_filter
+                     else
+                       global_entry_filter
+                     end
+
+      entry_filter.glob_include?(option("exclude"), document.relative_path).tap do |excluded|
+        Jekyll.logger.debug(LOG_KEY, "excluded #{document.relative_path}") if excluded
+      end
+    end
+
+    def global_entry_filter
+      @global_entry_filter ||= Jekyll::EntryFilter.new(site)
     end
   end
 end
