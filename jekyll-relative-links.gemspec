@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.license       = "MIT"
 
-  s.add_dependency "jekyll", "~> 3.3"
+  s.add_dependency "jekyll", ">= 3.3", "< 5.0"
   s.add_development_dependency "rspec", "~> 3.5"
   s.add_development_dependency "rubocop", ">= 0.49.0", "< 1.0.0"
   s.add_development_dependency "rubocop-jekyll", "~> 0.7.0"
