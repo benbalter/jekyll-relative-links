@@ -3,3 +3,4 @@
 /spec/examples.txt
 /Gemfile.lock
 *.gem
+spec/fixtures/site/.jekyll-cache/
