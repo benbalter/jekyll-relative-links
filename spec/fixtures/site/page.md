@@ -41,6 +41,10 @@
 
 [\[A link with escaped square brackets\]](/another-page.md)
 
+[A link with a title](another-page.md "This is a link with a \"title\"")
+
+[Quotes in url & title](/another-page.md#'apostrophe' 'Quotes in url & title')
+
 Content end
 
 [reference]: another-page.md
@@ -52,3 +56,5 @@ Content end
   [indented-reference]: another-page.md
 
 [reference-with-whitespace]: another-page.md  
+
+[reference-with-title]: another-page.md "This is a reference with a title"

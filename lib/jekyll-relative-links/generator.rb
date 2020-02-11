@@ -9,8 +9,10 @@ module JekyllRelativeLinks
 
     LINK_TEXT_REGEX = %r!(.*?)!.freeze
     FRAGMENT_REGEX = %r!(#.+?)?!.freeze
-    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAGMENT_REGEX}\)!.freeze
-    REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAGMENT_REGEX}\s*?$!.freeze
+    TITLE_REGEX = %r{(\s+"(?:\\"|[^"])*(?<!\\)"|\s+"(?:\\'|[^'])*(?<!\\)')?}.freeze
+    FRAG_AND_TITLE_REGEX = %r!#{FRAGMENT_REGEX}#{TITLE_REGEX}!.freeze
+    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAG_AND_TITLE_REGEX}\)!.freeze
+    REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAG_AND_TITLE_REGEX}\s*?$!.freeze
     LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!.freeze
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links"
@@ -48,14 +50,15 @@ module JekyllRelativeLinks
       return document if document.content.nil?
 
       document.content = document.content.dup.gsub(LINK_REGEX) do |original|
-        link_type, link_text, relative_path, fragment = link_parts(Regexp.last_match)
-        next original unless replaceable_link?(relative_path)
+        link = link_parts(Regexp.last_match)
+        next original unless replaceable_link?(link.path)
 
-        path = path_from_root(relative_path, url_base)
+        path = path_from_root(link.path, url_base)
         url  = url_for_path(path)
         next original unless url
 
-        replacement_text(link_type, link_text, url, fragment)
+        link.path = url
+        replacement_text(link)
       end
     rescue ArgumentError => e
       raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
@@ -63,12 +66,17 @@ module JekyllRelativeLinks
 
     private
 
+    # Stores info on a Markdown Link (avoid rubocop's Metrics/ParameterLists warning)
+    Link = Struct.new(:link_type, :text, :path, :fragment, :title)
+
     def link_parts(matches)
+      last_inline = 5
       link_type     = matches[2] ? :inline : :reference
-      link_text     = matches[link_type == :inline ? 2 : 5]
-      relative_path = matches[link_type == :inline ? 3 : 6]
-      fragment      = matches[link_type == :inline ? 4 : 7]
-      [link_type, link_text, relative_path, fragment]
+      link_text     = matches[link_type == :inline ? 2 : last_inline + 1]
+      relative_path = matches[link_type == :inline ? 3 : last_inline + 2]
+      fragment      = matches[link_type == :inline ? 4 : last_inline + 3]
+      title         = matches[link_type == :inline ? 5 : last_inline + 4]
+      Link.new(link_type, link_text, relative_path, fragment, title)
     end
 
     def context
@@ -98,13 +106,14 @@ module JekyllRelativeLinks
       absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
     end
 
-    def replacement_text(type, text, url, fragment = nil)
-      url << fragment if fragment
+    # @param link [Link] A Link object describing the markdown link to make
+    def replacement_text(link)
+      link.path << link.fragment if link.fragment
 
-      if type == :inline
-        "[#{text}](#{url})"
+      if link.link_type == :inline
+        "[#{link.text}](#{link.path}#{link.title})"
       else
-        "\n[#{text}]: #{url}"
+        "\n[#{link.text}]: #{link.path}#{link.title}"
       end
     end
 

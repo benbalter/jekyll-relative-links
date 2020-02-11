@@ -95,6 +95,17 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include(expected)
     end
 
+    it "handles links with a title" do
+      expected = "[A link with a title](/another-page.html \"This is a link with a \\\"title\\\"\")"
+      expect(page.content).to include(expected)
+    end
+
+    it "handles links with quotes in url fragment and title" do
+      # single_quotes are valid in urls
+      expected = "[Quotes in url & title](/another-page.html#'apostrophe' 'Quotes in url & title')"
+      expect(page.content).to include(expected)
+    end
+
     context "reference links" do
       it "handles reference links" do
         expect(page.content).to include("[reference]: /another-page.html")
@@ -111,6 +122,11 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
       it "leaves newlines intact" do
         expected = "\n\nContent end\n\n[reference]: /another-page.html\n\n"
+        expect(page.content).to include(expected)
+      end
+
+      it "handles reference links with titles" do
+        expected = "[reference-with-title]: /another-page.html \"This is a reference with a title\""
         expect(page.content).to include(expected)
       end
     end
