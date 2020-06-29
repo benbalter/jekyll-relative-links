@@ -9,4 +9,6 @@
 
 [Dir traversal](../page.md)
 
+[leading slash starts from the root](/another-page.md)
+
 ![image](../jekyll-logo.png)

@@ -53,7 +53,7 @@ module JekyllRelativeLinks
         link = link_parts(Regexp.last_match)
         next original unless replaceable_link?(link.path)
 
-        path = path_from_root(link.path, url_base)
+        path = path_from_root(link.path, url_base, link.is_absolute)
         url  = url_for_path(path)
         next original unless url
 
@@ -67,7 +67,7 @@ module JekyllRelativeLinks
     private
 
     # Stores info on a Markdown Link (avoid rubocop's Metrics/ParameterLists warning)
-    Link = Struct.new(:link_type, :text, :path, :fragment, :title)
+    Link = Struct.new(:link_type, :text, :path, :fragment, :title, :is_absolute)
 
     def link_parts(matches)
       last_inline = 5
@@ -76,7 +76,8 @@ module JekyllRelativeLinks
       relative_path = matches[link_type == :inline ? 3 : last_inline + 2]
       fragment      = matches[link_type == :inline ? 4 : last_inline + 3]
       title         = matches[link_type == :inline ? 5 : last_inline + 4]
-      Link.new(link_type, link_text, relative_path, fragment, title)
+      is_absolute   = relative_path.start_with? "/"
+      Link.new(link_type, link_text, relative_path, fragment, title, is_absolute)
     end
 
     def context
@@ -100,9 +101,10 @@ module JekyllRelativeLinks
       @potential_targets ||= site.pages + site.static_files + site.docs_to_write
     end
 
-    def path_from_root(relative_path, url_base)
+    def path_from_root(relative_path, url_base, is_absolute)
       relative_path.sub!(%r!\A/!, "")
-      absolute_path = File.expand_path(relative_path, url_base)
+      base = is_absolute ? "" : url_base
+      absolute_path = File.expand_path(relative_path, base)
       absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
     end
 
