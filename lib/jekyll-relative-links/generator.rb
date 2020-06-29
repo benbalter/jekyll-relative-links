@@ -71,12 +71,12 @@ module JekyllRelativeLinks
 
     def link_parts(matches)
       last_inline = 5
-      link_type     = matches[2] ? :inline : :reference
-      link_text     = matches[link_type == :inline ? 2 : last_inline + 1]
+      link_type = matches[2] ? :inline : :reference
+      link_text = matches[link_type == :inline ? 2 : last_inline + 1]
       relative_path = matches[link_type == :inline ? 3 : last_inline + 2]
-      fragment      = matches[link_type == :inline ? 4 : last_inline + 3]
-      title         = matches[link_type == :inline ? 5 : last_inline + 4]
-      is_absolute   = relative_path.start_with? "/"
+      fragment = matches[link_type == :inline ? 4 : last_inline + 3]
+      title = matches[link_type == :inline ? 5 : last_inline + 4]
+      is_absolute = relative_path.start_with? "/"
       Link.new(link_type, link_text, relative_path, fragment, title, is_absolute)
     end
 
