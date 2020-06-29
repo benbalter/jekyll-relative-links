@@ -71,11 +71,11 @@ module JekyllRelativeLinks
 
     def link_parts(matches)
       last_inline = 5
-      link_type     = matches[2] ? :inline : :reference
-      link_text     = matches[link_type == :inline ? 2 : last_inline + 1]
+      link_type = matches[2] ? :inline : :reference
+      link_text = matches[link_type == :inline ? 2 : last_inline + 1]
       relative_path = matches[link_type == :inline ? 3 : last_inline + 2]
-      fragment      = matches[link_type == :inline ? 4 : last_inline + 3]
-      title         = matches[link_type == :inline ? 5 : last_inline + 4]
+      fragment = matches[link_type == :inline ? 4 : last_inline + 3]
+      title = matches[link_type == :inline ? 5 : last_inline + 4]
       Link.new(link_type, link_text, relative_path, fragment, title)
     end
 
@@ -101,8 +101,11 @@ module JekyllRelativeLinks
     end
 
     def path_from_root(relative_path, url_base)
+      is_absolute = relative_path.start_with? "/"
+
       relative_path.sub!(%r!\A/!, "")
-      absolute_path = File.expand_path(relative_path, url_base)
+      base = is_absolute ? "" : url_base
+      absolute_path = File.expand_path(relative_path, base)
       absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
     end
 

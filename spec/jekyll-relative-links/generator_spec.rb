@@ -59,6 +59,10 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include("[Page with leading slash](/another-page.html)")
     end
 
+    it "converts relative links with leading slashes in sub dir" do
+      expect(page.content).to include("[Page with leading slash multi level](/subdir/page.html)")
+    end
+
     it "converts pages in sub-directories" do
       expect(page.content).to include("[Subdir Page](/subdir/page.html)")
     end
@@ -75,6 +79,11 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
     it "handles directory traversal" do
       expect(subdir_page.content).to include("[Dir traversal](/page.html)")
+    end
+
+    it "handles paths from the root" do
+      expected = "[leading slash starts from the root](/another-page.html)"
+      expect(subdir_page.content).to include(expected)
     end
 
     it "Handles HTML pages" do

@@ -9,6 +9,8 @@
 
 [Page with leading slash](/another-page.md)
 
+[Page with leading slash multi level](/subdir/page.md)
+
 [Reference link][reference]
 
 [Reference with fragment][reference-with-fragment]
