@@ -233,7 +233,11 @@ RSpec.describe JekyllRelativeLinks::Generator do
         expect(post.content).to include("[Another Page](/another-page.html)")
       end
 
-      it "converts relative links with permalinks from posts pages " do
+      it "converts relative links from posts to pages in the excerpt" do
+        expect(post.excerpt.content).to include("[Another Page](/another-page.html)")
+      end
+
+      it "converts relative links with permalinks from posts to pages " do
         expect(post.content).to include("[Page with permalink](/page-with-permalink/)")
       end
 
@@ -262,6 +266,10 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
         it "converts relative links from posts to posts" do
           expect(subdir_post.content).to include("[Another Post](/2016/01/01/test.html)")
+        end
+
+        it "converts relative links from posts to posts in the excerpt" do
+          expect(subdir_post.excerpt.content).to include("[Another Post](/2016/01/01/test.html)")
         end
       end
 

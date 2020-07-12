@@ -60,6 +60,8 @@ module JekyllRelativeLinks
         link.path = url
         replacement_text(link)
       end
+
+      replace_relative_links_excerpt!(document)
     rescue ArgumentError => e
       raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
     end
@@ -164,6 +166,10 @@ module JekyllRelativeLinks
 
     def global_entry_filter
       @global_entry_filter ||= Jekyll::EntryFilter.new(site)
+    end
+
+    def replace_relative_links_excerpt!(document)
+      document.data["excerpt"] = Jekyll::Excerpt.new(document) if document.data["excerpt"]
     end
   end
 end
