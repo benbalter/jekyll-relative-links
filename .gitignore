@@ -1,6 +1,8 @@
 /_site
 /tmp
 /spec/examples.txt
+vendor/bundle
+.bundle
 /Gemfile.lock
 *.gem
 spec/fixtures/site/.jekyll-cache/
