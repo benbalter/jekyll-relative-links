@@ -5,6 +5,8 @@
 
 [Another Page](another-page.md)
 
+[Page with Symbols?](page%20with%20symbols%3F.md)
+
 [Page with permalink](page-with-permalink.md)
 
 [Page with leading slash](/another-page.md)
