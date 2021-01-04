@@ -94,6 +94,7 @@ module JekyllRelativeLinks
     end
 
     def url_for_path(path)
+      path = CGI.unescape(path)
       target = potential_targets.find { |p| p.relative_path.sub(%r!\A/!, "") == path }
       relative_url(target.url) if target&.url
     end
