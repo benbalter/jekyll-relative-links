@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'commonmarker'
+require 'uri'
+
 module JekyllRelativeLinks
   class Generator < Jekyll::Generator
     attr_accessor :site, :config
@@ -7,13 +10,6 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    LINK_TEXT_REGEX = %r!(.*?)!.freeze
-    FRAGMENT_REGEX = %r!(#.+?|)?!.freeze
-    TITLE_REGEX = %r{(\s+"(?:\\"|[^"])*(?<!\\)"|\s+"(?:\\'|[^'])*(?<!\\)')?}.freeze
-    FRAG_AND_TITLE_REGEX = %r!#{FRAGMENT_REGEX}#{TITLE_REGEX}!.freeze
-    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^\)]+?)#{FRAG_AND_TITLE_REGEX}\)!.freeze
-    REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAG_AND_TITLE_REGEX}\s*?$!.freeze
-    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!.freeze
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
@@ -49,17 +45,30 @@ module JekyllRelativeLinks
       url_base = File.dirname(document.relative_path)
       return document if document.content.nil?
 
-      document.content = document.content.dup.gsub(LINK_REGEX) do |original|
-        link = link_parts(Regexp.last_match)
-        next original unless replaceable_link?(link.path)
-
-        path = path_from_root(link.path, url_base)
-        url  = url_for_path(path)
-        next original unless url
-
-        link.path = url
-        replacement_text(link)
+      doc = CommonMarker.render_doc(document.content, [:DEFAULT, :FOOTNOTES])
+      doc.walk do |node|
+        if [:link, :image].include? node.type
+          uri = URI(node.url)
+          if replaceable_link? uri.path
+            new_path = url_for_path(path_from_root(uri.path, url_base))
+            if new_path
+              begin
+                # TODO: clean this up
+                uri.path = new_path.sub(/\?/, '%3F')
+              rescue
+                byebug
+              end
+            end
+            begin
+              node.url = uri.to_s
+            rescue
+              byebug
+            end
+          end
+        end
       end
+
+      document.content = doc.to_commonmark
 
       replace_relative_links_excerpt!(document)
     rescue ArgumentError => e
