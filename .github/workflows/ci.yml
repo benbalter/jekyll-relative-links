@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         ruby-version: ['2.7', '3.0']
+        jekyll-version: ["~> 3.0", "~> 4.0"]
 
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +22,9 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          bundler-cache: true
+        env:
+          JEKYLL_VERSION: ${{ matrix.jekyll-version }}
 
       - name: Run tests
         run: script/cibuild
