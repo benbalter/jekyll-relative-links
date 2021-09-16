@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe JekyllRelativeLinks::Context do
-  let(:site) { fixture_site("site") }
   subject { described_class.new(site) }
+
+  let(:site) { fixture_site("site") }
 
   it "stores the site" do
     expect(subject.site).to eql(site)

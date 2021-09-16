@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe JekyllRelativeLinks::Generator do
+  subject { described_class.new(site.config) }
+
   let(:site_config) do
     overrides["relative_links"] = plugin_config if plugin_config
     overrides
@@ -17,9 +19,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
   let(:item) { doc_by_path(site, "_items/some-item.md") }
   let(:item_2) { doc_by_path(site, "_items/some-subdir/another-item.md") }
 
-  subject { described_class.new(site.config) }
-
-  before(:each) do
+  before do
     site.reset
     site.read
   end
@@ -32,11 +32,11 @@ RSpec.describe JekyllRelativeLinks::Generator do
     before { subject.instance_variable_set "@site", site }
 
     it "knows when an extension is markdown" do
-      expect(subject.send(:markdown_extension?, ".md")).to eql(true)
+      expect(subject.send(:markdown_extension?, ".md")).to be(true)
     end
 
     it "knows when an extension isn't markdown" do
-      expect(subject.send(:markdown_extension?, ".html")).to eql(false)
+      expect(subject.send(:markdown_extension?, ".html")).to be(false)
     end
 
     it "knows the markdown converter" do
@@ -344,7 +344,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
     before { page_by_path(site, "page.md").content = nil }
 
     it "doesn't error out" do
-      expect { subject.generate(site) }.to_not raise_error
+      expect { subject.generate(site) }.not_to raise_error
     end
   end
 end
