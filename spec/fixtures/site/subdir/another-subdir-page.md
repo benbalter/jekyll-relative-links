@@ -1,4 +1,0 @@
----
----
-
-# Another subdir page
