@@ -149,7 +149,7 @@ module JekyllRelativeLinks
       elsif link.link_type == :reference
         "\n[#{link.text}]: #{link.path}#{link.title}"
       elsif link.link_type == :gemini
-        "\n=> #{link.path} #{link.text}#{link.title}"
+        "=> #{link.path} #{link.text}#{link.title}"
       else
         raise "invalid link type"
       end
