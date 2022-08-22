@@ -21,6 +21,8 @@
 
 [Subdir Page](subdir/page.md)
 
+[Sub dir page](sub%20dir/page%20with%20space.md)
+
 [HTML Page](html-page.html)
 
 [Ghost page](ghost-page.md)

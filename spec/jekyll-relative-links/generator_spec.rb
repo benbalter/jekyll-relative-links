@@ -71,6 +71,10 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include("[Subdir Page](/subdir/page.html)")
     end
 
+    it "converts pages in sub-directories with spaces" do
+      expect(page.content).to include("[Sub dir page](/sub%20dir/page%20with%20space.html)")
+    end
+
     it "handles links within subdirectories" do
       expected = "[Another subdir page](/subdir/another-subdir-page.html)"
       expect(subdir_page.content).to include(expected)
