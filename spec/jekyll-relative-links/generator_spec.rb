@@ -29,7 +29,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
   end
 
   context "detecting markdown" do
-    before { subject.instance_variable_set "@site", site }
+    before { subject.instance_variable_set :@site, site }
 
     it "knows when an extension is markdown" do
       expect(subject.send(:markdown_extension?, ".md")).to be(true)
