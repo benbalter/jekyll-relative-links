@@ -13,7 +13,8 @@ module JekyllRelativeLinks
     FRAG_AND_TITLE_REGEX = %r!#{FRAGMENT_REGEX}#{TITLE_REGEX}!.freeze
     INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^)]+?)#{FRAG_AND_TITLE_REGEX}\)!.freeze
     REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAG_AND_TITLE_REGEX}\s*?$!.freeze
-    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!.freeze
+    GEMINI_LINK_REGEX = %r!^=>\s*((?:{. )?[^#\s}]*(?: .})?)(#[^\s]*|)?[^\S\r\n]*#{LINK_TEXT_REGEX}?$!.freeze
+    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX}|#{GEMINI_LINK_REGEX})!.freeze
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
@@ -37,7 +38,7 @@ module JekyllRelativeLinks
       documents = site.pages + site.docs_to_write if collections?
 
       documents.each do |document|
-        next unless markdown_extension?(document.extname)
+        next unless markdown_extension?(document.extname) or gemini_extension?(document.extname)
         next if document.is_a?(Jekyll::StaticFile)
         next if excluded?(document)
 
@@ -72,17 +73,44 @@ module JekyllRelativeLinks
     Link = Struct.new(:link_type, :text, :path, :fragment, :title)
 
     def link_parts(matches)
-      last_inline = 5
-      link_type = matches[2] ? :inline : :reference
-      link_text = matches[link_type == :inline ? 2 : last_inline + 1]
-      relative_path = matches[link_type == :inline ? 3 : last_inline + 2]
-      fragment = matches[link_type == :inline ? 4 : last_inline + 3]
-      title = matches[link_type == :inline ? 5 : last_inline + 4]
-      Link.new(link_type, link_text, relative_path, fragment, title)
+      # Determine type based on non null matches
+      type =
+        if    matches[10] then :gemini
+        elsif matches[6]  then :reference
+        elsif matches[2]  then :inline
+        else  raise "invalid link type"
+        end
+
+      link_texts = {
+        :inline => matches[2],
+        :reference => matches[6],
+        :gemini => matches[12],
+      }
+      relative_paths = {
+        :inline => matches[3],
+        :reference => matches[7],
+        :gemini => matches[10],
+      }
+      fragments = {
+        :inline => matches[4],
+        :reference => matches[8],
+        :gemini => matches[11],
+      }
+      titles = {
+        :inline => matches[5],
+        :reference => matches[9],
+        :gemini => nil,
+      }
+
+      Link.new(type, link_texts[type], relative_paths[type], fragments[type], titles[type])
     end
 
     def context
       @context ||= JekyllRelativeLinks::Context.new(site)
+    end
+
+    def gemini_extension?(extension)
+      extension == ".gmi"
     end
 
     def markdown_extension?(extension)
@@ -118,8 +146,12 @@ module JekyllRelativeLinks
 
       if link.link_type == :inline
         "[#{link.text}](#{link.path}#{link.title})"
-      else
+      elsif link.link_type == :reference
         "\n[#{link.text}]: #{link.path}#{link.title}"
+      elsif link.link_type == :gemini
+        "=> #{link.path} #{link.text}#{link.title}"
+      else
+        raise "invalid link type"
       end
     end
 
