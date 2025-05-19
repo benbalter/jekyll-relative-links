@@ -340,6 +340,25 @@ RSpec.describe JekyllRelativeLinks::Generator do
     end
   end
 
+  context "link validation" do
+    it "knows when validation is enabled" do
+      plugin_config = { "validate_links" => true }
+      generator = described_class.new({ "relative_links" => plugin_config })
+      expect(generator.send(:validate_links?)).to be true
+    end
+    
+    it "knows when validation is disabled" do
+      plugin_config = { "validate_links" => false }
+      generator = described_class.new({ "relative_links" => plugin_config })
+      expect(generator.send(:validate_links?)).to be false
+    end
+    
+    it "has validation disabled by default" do
+      generator = described_class.new({})
+      expect(generator.send(:validate_links?)).to be false
+    end
+  end
+
   context "a page without content" do
     before { page_by_path(site, "page.md").content = nil }
 

@@ -61,6 +61,7 @@ You can configure this plugin in `_config.yml` under the `relative_links` key. T
 relative_links:
   enabled:     true
   collections: false
+  validate_links: false
 ```
 
 ### Excluding files
@@ -104,3 +105,14 @@ File | Link
 ### Disabling
 
 Even if the plugin is enabled (e.g., via the `:jekyll_plugins` group in your Gemfile) you can disable it by setting the `enabled` key to `false`.
+
+### Validating Links
+
+By default, the plugin doesn't validate if linked files exist. It will silently keep the original Markdown links when the target file doesn't exist.
+
+Setting the `validate_links` option to `true` enables link validation, causing Jekyll to raise an error when attempting to link to a nonexistent file, similar to Jekyll's native `{% link %}` tag.
+
+```yml
+relative_links:
+  validate_links: true
+```
