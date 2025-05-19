@@ -170,7 +170,7 @@ module JekyllRelativeLinks
     end
 
     def replace_relative_links_excerpt!(document)
-      document.data["excerpt"] = Jekyll::Excerpt.new(document) if document.data["excerpt"]
+      document.data["excerpt"] = Jekyll::Excerpt.new(document) if document.data["excerpt"] && !document.data["excerpt"].is_a?(String)
     end
   end
 end
