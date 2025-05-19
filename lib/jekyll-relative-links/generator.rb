@@ -131,11 +131,11 @@ module JekyllRelativeLinks
     end
 
     def absolute_url?(string)
-      return unless string
+      return false unless string
 
       Addressable::URI.parse(string).absolute?
     rescue Addressable::URI::InvalidURIError
-      nil
+      false
     end
 
     def fragment?(string)
