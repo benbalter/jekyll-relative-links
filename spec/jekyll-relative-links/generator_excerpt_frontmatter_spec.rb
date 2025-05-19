@@ -1,20 +1,19 @@
 # frozen_string_literal: true
 
 RSpec.describe JekyllRelativeLinks::Generator do
-  subject { described_class.new(site.config) }
-
+  let(:generator) { described_class.new(site.config) }
   let(:site) { fixture_site("excerpt-in-frontmatter") }
   let(:page) { page_by_path(site, "page-with-excerpt.md") }
 
   before do
     site.reset
     site.read
-    subject.generate(site)
+    generator.generate(site)
   end
 
   context "with excerpt in frontmatter" do
     it "doesn't raise an error" do
-      expect { subject.generate(site) }.not_to raise_error
+      expect { generator.generate(site) }.not_to raise_error
     end
 
     it "preserves the frontmatter excerpt as a string" do
