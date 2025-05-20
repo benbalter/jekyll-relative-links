@@ -18,6 +18,7 @@ module JekyllRelativeLinks
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
     COLLECTIONS_KEY = "collections"
+    VALIDATE_LINKS_KEY = "validate_links"
     LOG_KEY = "Relative Links:"
 
     safe true
@@ -55,6 +56,12 @@ module JekyllRelativeLinks
 
         path = path_from_root(link.path, url_base)
         url  = url_for_path(path)
+        
+        if url.nil? && validate_links?
+          source = document.relative_path
+          raise "Invalid reference to '#{link.path}' in '#{source}'"
+        end
+        
         next original unless url
 
         link.path = url
@@ -149,6 +156,10 @@ module JekyllRelativeLinks
 
     def collections?
       option(COLLECTIONS_KEY) == true
+    end
+
+    def validate_links?
+      option(VALIDATE_LINKS_KEY) == true
     end
 
     def excluded?(document)
