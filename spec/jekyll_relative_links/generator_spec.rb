@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe JekyllRelativeLinks::Generator do
-  subject { described_class.new(site.config) }
+  subject(:generator) { described_class.new(site.config) }
 
   let(:site_config) do
     overrides["relative_links"] = plugin_config if plugin_config
@@ -17,7 +17,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
   let(:post) { doc_by_path(site, "_posts/2016-01-01-test.md") }
   let(:subdir_post) { doc_by_path(site, "subdir/_posts/2016-01-01-test.md") }
   let(:item) { doc_by_path(site, "_items/some-item.md") }
-  let(:item_2) { doc_by_path(site, "_items/some-subdir/another-item.md") }
+  let(:item_two) { doc_by_path(site, "_items/some-subdir/another-item.md") }
 
   before do
     site.reset
@@ -25,27 +25,27 @@ RSpec.describe JekyllRelativeLinks::Generator do
   end
 
   it "saves the config" do
-    expect(subject.config).to eql(site.config)
+    expect(generator.config).to eql(site.config)
   end
 
-  context "detecting markdown" do
-    before { subject.instance_variable_set :@site, site }
+  context "when detecting markdown" do
+    before { generator.instance_variable_set :@site, site }
 
     it "knows when an extension is markdown" do
-      expect(subject.send(:markdown_extension?, ".md")).to be(true)
+      expect(generator.send(:markdown_extension?, ".md")).to be(true)
     end
 
     it "knows when an extension isn't markdown" do
-      expect(subject.send(:markdown_extension?, ".html")).to be(false)
+      expect(generator.send(:markdown_extension?, ".html")).to be(false)
     end
 
     it "knows the markdown converter" do
-      expect(subject.send(:markdown_converter)).to be_a(Jekyll::Converters::Markdown)
+      expect(generator.send(:markdown_converter)).to be_a(Jekyll::Converters::Markdown)
     end
   end
 
-  context "generating" do
-    before { subject.generate(site) }
+  context "when generating" do
+    before { generator.generate(site) }
 
     it "converts relative links" do
       expect(page.content).to include("[Another Page](/another-page.html)")
@@ -119,7 +119,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include(expected)
     end
 
-    context "reference links" do
+    context "with reference links" do
       it "handles reference links" do
         expect(page.content).to include("[reference]: /another-page.html")
       end
@@ -174,7 +174,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
       end
     end
 
-    context "linking to page fragments" do
+    context "when linking to page fragments" do
       it "converts relative links" do
         expect(page.content).to include("[Fragment](/another-page.html#foo)")
       end
@@ -202,13 +202,13 @@ RSpec.describe JekyllRelativeLinks::Generator do
       end
     end
 
-    context "images" do
+    context "with images" do
       it "handles images" do
         expect(subdir_page.content).to include("![image](/jekyll-logo.png)")
       end
     end
 
-    context "disabled" do
+    context "when disabled" do
       let(:plugin_config) { { "enabled" => false } }
 
       it "does not process pages when disabled" do
@@ -216,7 +216,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
       end
     end
 
-    context "collections" do
+    context "with collections" do
       let(:plugin_config) { { "collections" => true } }
       let(:overrides) do
         {
@@ -259,7 +259,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
         expect(post.content).to include(expected)
       end
 
-      context "posts in subdirs" do
+      context "with posts in subdirs" do
         it "converts relative links from pages to posts" do
           expect(page.content).to include("[Another post](/subdir/2016/01/01/test.html)")
         end
@@ -277,7 +277,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
         end
       end
 
-      context "items (with output)" do
+      context "with items (with output)" do
         it "converts relative links from pages to items" do
           expect(page.content).to include("[An item](/items/some-item/)")
           expect(page.content).to include("[Another item](/items/another-item/)")
@@ -285,7 +285,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
         it "converts relative links from items to pages" do
           expect(item.content).to include("[Another Page](/another-page.html)")
-          expect(item_2.content).to include("[Another Page](/another-page.html)")
+          expect(item_two.content).to include("[Another Page](/another-page.html)")
         end
 
         it "converts relative links from posts to items" do
@@ -297,7 +297,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
         end
       end
 
-      context "excludes" do
+      context "with excludes" do
         let(:excludes) do
           [
             "another-page.md",
@@ -307,7 +307,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
         end
         let(:plugin_config) { { "collections" => true, "exclude" => excludes } }
 
-        context "pages" do
+        context "with pages" do
           it "includes included pages" do
             expect(page.content).to include("[Another Page](/another-page.html)")
           end
@@ -317,7 +317,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
           end
         end
 
-        context "posts" do
+        context "with posts" do
           it "includes included posts" do
             expect(subdir_post.content).to include("[Another Page](/another-page.html)")
           end
@@ -327,24 +327,24 @@ RSpec.describe JekyllRelativeLinks::Generator do
           end
         end
 
-        context "collections" do
+        context "with collections" do
           it "includes included documents" do
             expect(item.content).to include("[Another Page](/another-page.html)")
           end
 
           it "excludes excluded documents" do
-            expect(item_2.content).to include("[Another Page](../../another-page.md)")
+            expect(item_two.content).to include("[Another Page](../../another-page.md)")
           end
         end
       end
     end
   end
 
-  context "a page without content" do
+  context "with a page without content" do
     before { page_by_path(site, "page.md").content = nil }
 
     it "doesn't error out" do
-      expect { subject.generate(site) }.not_to raise_error
+      expect { generator.generate(site) }.not_to raise_error
     end
   end
 end
