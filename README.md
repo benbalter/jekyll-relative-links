@@ -101,6 +101,34 @@ File | Link
 `_my_collection/some_subdir/another_doc.md` | `[Some Doc](../some_doc.md)`
 
 
+### Using the `rellinks` filter
+
+In addition to automatically converting relative links in your Markdown files, this plugin also provides a Liquid filter called `rellinks` that can be used to convert relative links in content that has already been processed by Jekyll's `markdownify` filter.
+
+This is especially useful when you have Markdown content in your front matter that you want to display with properly converted links.
+
+For example, if you have a page with a sidebar defined in the front matter:
+
+```yaml
+---
+title: My Page
+sidebar: |
+  My page's sidebar **content**.
+  
+  Might have [a link somewhere](./other.md)
+---
+```
+
+You can use the `rellinks` filter in your template like this:
+
+```liquid
+<aside class="sidebar">
+  {{ page.sidebar | markdownify | rellinks }}
+</aside>
+```
+
+The `rellinks` filter will transform any relative links to Markdown files in the HTML output from the `markdownify` filter, converting them to their rendered equivalents.
+
 ### Disabling
 
 Even if the plugin is enabled (e.g., via the `:jekyll_plugins` group in your Gemfile) you can disable it by setting the `enabled` key to `false`.
