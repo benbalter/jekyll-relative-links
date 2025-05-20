@@ -16,3 +16,9 @@ AllCops:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
+
+RSpec/FilePath:
+  Exclude:
+    - spec/jekyll-relative-links/generator_excerpt_frontmatter_spec.rb
+    - spec/jekyll-relative-links/context_spec.rb
+    - spec/jekyll-relative-links/generator_spec.rb
