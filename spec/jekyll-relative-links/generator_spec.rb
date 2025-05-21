@@ -346,16 +346,34 @@ RSpec.describe JekyllRelativeLinks::Generator do
       generator = described_class.new({ "relative_links" => plugin_config })
       expect(generator.send(:validate_links?)).to be true
     end
-    
+
     it "knows when validation is disabled" do
       plugin_config = { "validate_links" => false }
       generator = described_class.new({ "relative_links" => plugin_config })
       expect(generator.send(:validate_links?)).to be false
     end
-    
+
     it "has validation disabled by default" do
       generator = described_class.new({})
       expect(generator.send(:validate_links?)).to be false
+    end
+
+    context "when validation is enabled" do
+      let(:plugin_config) { { "validate_links" => true } }
+
+      before do
+        site.reset
+        site.read
+        subject.instance_variable_set :@site, site
+      end
+
+      it "raises an error when a file doesn't exist" do
+        page.content = "[Missing](./nonexistent.md)"
+
+        expect do
+          subject.replace_relative_links!(page)
+        end.to raise_error(%r!Invalid reference to './nonexistent.md' in 'page.md'!)
+      end
     end
   end
 

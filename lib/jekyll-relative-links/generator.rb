@@ -46,6 +46,7 @@ module JekyllRelativeLinks
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def replace_relative_links!(document)
       url_base = File.dirname(document.relative_path)
       return document if document.content.nil?
@@ -56,12 +57,12 @@ module JekyllRelativeLinks
 
         path = path_from_root(link.path, url_base)
         url  = url_for_path(path)
-        
+
         if url.nil? && validate_links?
           source = document.relative_path
           raise "Invalid reference to '#{link.path}' in '#{source}'"
         end
-        
+
         next original unless url
 
         link.path = url
@@ -72,6 +73,7 @@ module JekyllRelativeLinks
     rescue ArgumentError => e
       raise e unless e.to_s.start_with?("invalid byte sequence in UTF-8")
     end
+    # rubocop:enable Metrics/AbcSize
 
     private
 
