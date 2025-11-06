@@ -55,6 +55,18 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include("[Page with Symbols?](/page%20with%20symbols?.html)")
     end
 
+    it "converts relative links with raw spaces" do
+      expect(page.content).to include("[Link with raw space](/page%20with%20space.html)")
+    end
+
+    it "converts relative links with angle brackets" do
+      expect(page.content).to include("[Link with angle brackets](/page%20with%20space.html)")
+    end
+
+    it "converts reference links with angle brackets" do
+      expect(page.content).to include("[ref-space]: /page%20with%20space.html")
+    end
+
     it "converts relative links with permalinks" do
       expect(page.content).to include("[Page with permalink](/page-with-permalink/)")
     end

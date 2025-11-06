@@ -78,7 +78,15 @@ module JekyllRelativeLinks
       relative_path = matches[link_type == :inline ? 3 : last_inline + 2]
       fragment = matches[link_type == :inline ? 4 : last_inline + 3]
       title = matches[link_type == :inline ? 5 : last_inline + 4]
-      Link.new(link_type, link_text, relative_path, fragment, title)
+      Link.new(link_type, link_text, strip_angle_brackets(relative_path), fragment, title)
+    end
+
+    # Strip angle brackets from link paths
+    # Markdown allows angle brackets around URLs: [text](<path with spaces.md>)
+    def strip_angle_brackets(path)
+      return path unless path
+
+      path.sub(%r!\A<(.+)>\z!, '\1')
     end
 
     def context

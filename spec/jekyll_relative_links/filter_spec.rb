@@ -63,6 +63,12 @@ RSpec.describe JekyllRelativeLinks::Filter do
     expect(filter.rellinks(html)).to eq(html)
   end
 
+  it "handles links with spaces (URL-encoded)" do
+    html = "<p><a href=\"page%20with%20space.md\">Link with space</a></p>"
+    expected = "<p><a href=\"/page%20with%20space.html\">Link with space</a></p>"
+    expect(filter.rellinks(html)).to eq(expected)
+  end
+
   private
 
   def set_subdir_context

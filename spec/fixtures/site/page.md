@@ -66,3 +66,7 @@ Content end
 [Link with raw space](page with space.md)
 
 [Link with angle brackets](<page with space.md>)
+
+[Reference with space][ref-space]
+
+[ref-space]: <page with space.md>
