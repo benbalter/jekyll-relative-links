@@ -78,7 +78,28 @@ module JekyllRelativeLinks
       relative_path = matches[link_type == :inline ? 3 : last_inline + 2]
       fragment = matches[link_type == :inline ? 4 : last_inline + 3]
       title = matches[link_type == :inline ? 5 : last_inline + 4]
-      Link.new(link_type, link_text, relative_path, fragment, title)
+      Link.new(link_type, link_text, strip_angle_brackets(relative_path), fragment, title)
+    end
+
+    # Strip angle brackets from link paths to handle GitHub's angle bracket syntax
+    #
+    # GitHub UI uses angle brackets to wrap URLs with special characters like spaces:
+    # [text](<path with spaces.md>). This method removes the wrapping angle brackets
+    # so the path can be properly matched against files on disk.
+    #
+    # @param path [String, nil] The link path that may have angle brackets
+    # @return [String, nil] The path with angle brackets removed, or the original if no brackets
+    #
+    # @example
+    #   strip_angle_brackets("<file with spaces.md>")
+    #   #=> "file with spaces.md"
+    #
+    #   strip_angle_brackets("regular-file.md")
+    #   #=> "regular-file.md"
+    def strip_angle_brackets(path)
+      return path unless path
+
+      path.sub(%r!\A<(.+)>\z!, '\1')
     end
 
     def context

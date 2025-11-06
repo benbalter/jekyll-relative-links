@@ -62,3 +62,11 @@ Content end
 [reference-with-whitespace]: another-page.md  
 
 [reference-with-title]: another-page.md "This is a reference with a title"
+
+[Link with raw space](page with space.md)
+
+[Link with angle brackets](<page with space.md>)
+
+[Reference with space][ref-space]
+
+[ref-space]: <page with space.md>
