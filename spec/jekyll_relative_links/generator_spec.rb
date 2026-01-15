@@ -14,6 +14,7 @@ RSpec.describe JekyllRelativeLinks::Generator do
   let(:html_page) { page_by_path(site, "html-page.html") }
   let(:another_page) { page_by_path(site, "another-page.md") }
   let(:subdir_page) { page_by_path(site, "subdir/page.md") }
+  let(:page_with_footnote) { page_by_path(site, "page-with-footnote.md") }
   let(:post) { doc_by_path(site, "_posts/2016-01-01-test.md") }
   let(:subdir_post) { doc_by_path(site, "subdir/_posts/2016-01-01-test.md") }
   let(:item) { doc_by_path(site, "_items/some-item.md") }
@@ -214,6 +215,23 @@ RSpec.describe JekyllRelativeLinks::Generator do
     context "with images" do
       it "handles images" do
         expect(subdir_page.content).to include("![image](/jekyll-logo.png)")
+      end
+    end
+
+    context "with footnotes" do
+      it "converts links inside footnote definitions" do
+        expected = "[^1]: This is a footnote with a [link to another page](/another-page.html)"
+        expect(page_with_footnote.content).to include(expected)
+      end
+
+      it "converts links with permalinks inside footnote definitions" do
+        expected = "[^2]: Another footnote with [page with permalink](/page-with-permalink/)"
+        expect(page_with_footnote.content).to include(expected)
+      end
+
+      it "converts links with fragments inside footnote definitions" do
+        expected = "[fragment link](/another-page.html#foo)"
+        expect(page_with_footnote.content).to include(expected)
       end
     end
 
