@@ -49,6 +49,10 @@
 
 [Quotes in url & title](/another-page.md#'apostrophe' 'Quotes in url & title')
 
+[Link with inline image ![badge](https://example.com/badge.png)](another-page.md)
+
+[Another link with image ![alt text](https://example.com/logo.png)](page-with-permalink.md)
+
 Content end
 
 [reference]: another-page.md

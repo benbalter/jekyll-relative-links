@@ -7,7 +7,7 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    LINK_TEXT_REGEX = %r!(.*?)!.freeze
+    LINK_TEXT_REGEX = %r{((?:!\[[^\]]*\](?:\([^\)]*\))?|(?!\]\().)*?)}.freeze
     FRAGMENT_REGEX = %r!(#.+?|)?!.freeze
     TITLE_REGEX = %r{(\s+"(?:\\"|[^"])*(?<!\\)"|\s+"(?:\\'|[^'])*(?<!\\)')?}.freeze
     FRAG_AND_TITLE_REGEX = %r!#{FRAGMENT_REGEX}#{TITLE_REGEX}!.freeze
