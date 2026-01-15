@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cgi"
+
 module JekyllRelativeLinks
   class Generator < Jekyll::Generator
     attr_accessor :site, :config
