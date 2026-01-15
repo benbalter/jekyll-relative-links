@@ -57,7 +57,8 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
     it "converts hex-encoded spaces in paths" do
       test_page = page_by_path(site, "test-spaces.md")
-      expect(test_page.content).to include("[Link to file with spaces](/sub%20folder/file%20with%20spaces.html)")
+      expected = "[Link to file with spaces](/sub%20folder/file%20with%20spaces.html)"
+      expect(test_page.content).to include(expected)
     end
 
     it "converts relative links with permalinks" do
