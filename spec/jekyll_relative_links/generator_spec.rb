@@ -128,6 +128,16 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include(expected)
     end
 
+    it "handles links with inline images" do
+      expected = "[Link with inline image ![badge](https://example.com/badge.png)](/another-page.html)"
+      expect(page.content).to include(expected)
+    end
+
+    it "handles links with inline images and permalinks" do
+      expected = "[Another link with image ![alt text](https://example.com/logo.png)](/page-with-permalink/)"
+      expect(page.content).to include(expected)
+    end
+
     context "with reference links" do
       it "handles reference links" do
         expect(page.content).to include("[reference]: /another-page.html")
