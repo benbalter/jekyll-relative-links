@@ -132,3 +132,40 @@ The `rellinks` filter will transform any relative links to Markdown files in the
 ### Disabling
 
 Even if the plugin is enabled (e.g., via the `:jekyll_plugins` group in your Gemfile) you can disable it by setting the `enabled` key to `false`.
+
+## Limitations
+
+### Line-Wrapped Links
+
+This plugin does not process links that contain hard line breaks (newlines) within the link syntax. According to the [CommonMark specification](https://spec.commonmark.org/) and [GitHub Flavored Markdown](https://github.github.com/gfm/), newlines are not permitted within link text or URLs.
+
+For example, this is **not valid Markdown**:
+
+```markdown
+[my link
+text](page.md)
+```
+
+Nor is this:
+
+```markdown
+[my link](page
+.md)
+```
+
+#### Recommended Solution: Reference-Style Links
+
+If you need to manage long links while keeping your Markdown source lines at a reasonable length, use **reference-style links**:
+
+```markdown
+Check out the [comprehensive guide to Jekyll plugins][plugin-guide]
+for more information.
+
+[plugin-guide]: path/to/very-long-documentation-filename.md
+```
+
+This approach:
+- Keeps your prose readable with appropriate line wrapping
+- Works with this plugin (reference links are fully supported)
+- Is valid Markdown that works across all parsers
+- Separates link definitions from the text, making them easier to maintain
