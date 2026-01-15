@@ -21,6 +21,12 @@ module JekyllRelativeLinks
     ENABLED_KEY = "enabled"
     COLLECTIONS_KEY = "collections"
 
+    # Regex to match markdown links in HTML: <a href="*.md">
+    # Capture groups:
+    #   (1) attributes before href, (2) the .md path,
+    #   (3) optional fragment, (4) attributes after href
+    MARKDOWN_LINK_IN_HTML = %r!<a\s+([^>]*?\s+)?href="([^"]+\.md)(#[^"]*)?"\s*([^>]*)>!m.freeze
+
     def self.should_process?(page, config)
       return false if disabled?(config)
       return false unless markdown_extension?(page.extname, page.site)
@@ -71,7 +77,8 @@ module JekyllRelativeLinks
       potential_targets = site.pages + site.static_files + site.docs_to_write
 
       # Process <a href="*.md"> links that were added via includes
-      html.gsub(%r!<a\s+([^>]*?\s+)?href="([^"]+\.md)(#[^"]*)?"\s*([^>]*)>!m) do |match|
+      # rubocop:disable Metrics/BlockLength
+      html.gsub(MARKDOWN_LINK_IN_HTML) do |match|
         attributes_before = Regexp.last_match[1] || ""
         relative_path = Regexp.last_match[2]
         fragment = Regexp.last_match[3] || ""
@@ -99,11 +106,18 @@ module JekyllRelativeLinks
           # Use Jekyll's URL
           url = target.url
           url = "/#{url}" unless url.start_with?("/")
-          "<a #{attributes_before}href=\"#{url}#{fragment}\" #{attributes_after}>"
+
+          # Build the replacement ensuring proper spacing
+          attrs = []
+          attrs << attributes_before.strip unless attributes_before.empty?
+          attrs << "href=\"#{url}#{fragment}\""
+          attrs << attributes_after.strip unless attributes_after.empty?
+          "<a #{attrs.join(" ")}>"
         else
           match
         end
       end
+      # rubocop:enable Metrics/BlockLength
     end
     # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
   end
