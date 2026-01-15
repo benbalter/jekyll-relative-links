@@ -11,7 +11,8 @@ module JekyllRelativeLinks
   Jekyll::Hooks.register :documents, :post_render do |document|
     next unless JekyllRelativeLinks::Hooks.should_process_document?(document, document.site.config)
 
-    document.output = JekyllRelativeLinks::Hooks.process_html_links(document.output, document, document.site)
+    document.output = JekyllRelativeLinks::Hooks.process_html_links(document.output, document,
+                                                                    document.site)
   end
 
   module Hooks
@@ -62,6 +63,7 @@ module JekyllRelativeLinks
       entry_filter.glob_include?(config[CONFIG_KEY]["exclude"], document.relative_path)
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
     def self.process_html_links(html, document, site)
       return html if html.nil? || html.empty?
 
@@ -84,14 +86,14 @@ module JekyllRelativeLinks
 
         # Calculate path from root
         is_absolute = relative_path.start_with?("/")
-        relative_path_clean = relative_path.sub(%r!\A/!, "")
+        relative_path_clean = relative_path.delete_prefix("/")
         base = is_absolute ? "" : url_base
         absolute_path = File.expand_path(relative_path_clean, base)
         path = absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
 
         # Find the target page and get its URL
         path = CGI.unescape(path)
-        target = potential_targets.find { |p| p.relative_path.sub(%r!\A/!, "") == path }
+        target = potential_targets.find { |p| p.relative_path.delete_prefix("/") == path }
 
         if target&.url
           # Use Jekyll's URL
@@ -103,5 +105,6 @@ module JekyllRelativeLinks
         end
       end
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
   end
 end
