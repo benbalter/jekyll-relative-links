@@ -98,6 +98,15 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include("[Ghost page](ghost-page.md)")
     end
 
+    # Line-wrapped links are not valid CommonMark/GFM and should not be processed
+    it "doesn't process links with line breaks in text (not valid Markdown)" do
+      expect(page.content).to include("[Line-wrapped link\ntext](another-page.md)")
+    end
+
+    it "doesn't process links with line breaks in URL (not valid Markdown)" do
+      expect(page.content).to include("[Link with wrapped URL](another-\npage.md)")
+    end
+
     it "handles links with nested square brackets" do
       expected = "[[A link with square brackets]](/another-page.html)"
       expect(page.content).to include(expected)

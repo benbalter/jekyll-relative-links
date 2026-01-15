@@ -62,3 +62,9 @@ Content end
 [reference-with-whitespace]: another-page.md  
 
 [reference-with-title]: another-page.md "This is a reference with a title"
+
+[Line-wrapped link
+text](another-page.md)
+
+[Link with wrapped URL](another-
+page.md)
