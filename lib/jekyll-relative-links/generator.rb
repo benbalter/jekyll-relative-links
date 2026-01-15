@@ -7,13 +7,16 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
-    LINK_TEXT_REGEX = %r!(.*?)!.freeze
+    # Negative lookahead prevents matching across ]: which would incorrectly
+    # match footnotes like [^1]: text [actual link](url.md) as a single link
+    LINK_TEXT_REGEX = /((?:(?!\]:\s).)*?)/.freeze
     FRAGMENT_REGEX = %r!(#.+?|)?!.freeze
     TITLE_REGEX = %r{(\s+"(?:\\"|[^"])*(?<!\\)"|\s+"(?:\\'|[^'])*(?<!\\)')?}.freeze
     FRAG_AND_TITLE_REGEX = %r!#{FRAGMENT_REGEX}#{TITLE_REGEX}!.freeze
-    INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^)]+?)#{FRAG_AND_TITLE_REGEX}\)!.freeze
-    REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAG_AND_TITLE_REGEX}\s*?$!.freeze
-    LINK_REGEX = %r!(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})!.freeze
+    INLINE_LINK_REGEX = /\[#{LINK_TEXT_REGEX}\]\(([^)]+?)#{FRAG_AND_TITLE_REGEX}\)/.freeze
+    # Negative lookahead (?!\^) excludes footnote definitions like [^1]:
+    REFERENCE_LINK_REGEX = /^\s*?\[(?!\^)#{LINK_TEXT_REGEX}\]: (.+?)#{FRAG_AND_TITLE_REGEX}\s*?$/.freeze
+    LINK_REGEX = /(#{INLINE_LINK_REGEX}|#{REFERENCE_LINK_REGEX})/.freeze
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
