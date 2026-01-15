@@ -53,7 +53,9 @@ module JekyllRelativeLinks
         link = link_parts(Regexp.last_match)
         next original unless replaceable_link?(link.path)
 
-        path = path_from_root(link.path, url_base)
+        # Decode hex-encoded characters before path resolution
+        decoded_path = CGI.unescape(link.path)
+        path = path_from_root(decoded_path, url_base)
         url  = url_for_path(path)
         next original unless url
 
@@ -94,7 +96,6 @@ module JekyllRelativeLinks
     end
 
     def url_for_path(path)
-      path = CGI.unescape(path)
       target = potential_targets.find { |p| p.relative_path.sub(%r!\A/!, "") == path }
       relative_url(target.url) if target&.url
     end
