@@ -63,6 +63,26 @@ RSpec.describe JekyllRelativeLinks::Filter do
     expect(filter.rellinks(html)).to eq(html)
   end
 
+  context "with encoding issues" do
+    it "handles non-UTF-8 characters in Dir.pwd without raising encoding errors" do
+      # Simulate a Windows path with umlauts encoded in Windows-1252
+      allow(Dir).to receive(:pwd).and_return("C:/tmp/Köln/jekyll-issue".encode("Windows-1252"))
+      
+      # This should not raise an Encoding::CompatibilityError
+      html = "<p><a href=\"another-page.md\">Link</a></p>"
+      expect { filter.rellinks(html) }.not_to raise_error
+    end
+
+    it "handles UTF-8 characters in Dir.pwd without raising encoding errors" do
+      # Test with UTF-8 encoded path
+      allow(Dir).to receive(:pwd).and_return("/tmp/Köln/jekyll-issue".encode("UTF-8"))
+      
+      html = "<p><a href=\"ghost-page.md\">Link</a></p>"
+      # Should not raise encoding errors, even if the page doesn't exist
+      expect { filter.rellinks(html) }.not_to raise_error
+    end
+  end
+
   private
 
   def set_subdir_context

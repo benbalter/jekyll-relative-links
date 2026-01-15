@@ -48,7 +48,9 @@ module JekyllRelativeLinks
       relative_path.delete_prefix!("/")
       base = is_absolute ? "" : url_base
       absolute_path = File.expand_path(relative_path, base)
-      absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
+      # Ensure encoding compatibility to avoid issues with non-ASCII characters in paths
+      pwd = Dir.pwd.encode("UTF-8", invalid: :replace, undef: :replace)
+      absolute_path.sub(%r!\A#{Regexp.escape(pwd)}/!, "")
     end
 
     def url_for_path(path, site)
