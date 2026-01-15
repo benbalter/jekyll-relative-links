@@ -137,7 +137,7 @@ Even if the plugin is enabled (e.g., via the `:jekyll_plugins` group in your Gem
 
 ### Line-Wrapped Links
 
-This plugin does not process links that contain hard line breaks (newlines) within the link syntax. According to the [CommonMark specification](https://spec.commonmark.org/) and [GitHub Flavored Markdown](https://github.github.com/gfm/), newlines are not permitted within link text or URLs.
+This plugin does not process links that contain hard line breaks (newlines) within the link syntax. According to the [CommonMark specification (section 6.3)](https://spec.commonmark.org/0.30/#links) and [GitHub Flavored Markdown](https://github.github.com/gfm/), newlines are not permitted within link text or URLs.
 
 For example, this is **not valid Markdown**:
 
