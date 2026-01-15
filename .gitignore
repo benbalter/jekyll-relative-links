@@ -6,3 +6,6 @@ vendor/bundle
 /Gemfile.lock
 *.gem
 spec/fixtures/site/.jekyll-cache/
+# Vendor directory for bundle
+vendor/
+.bundle/
