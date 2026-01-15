@@ -7,6 +7,11 @@ module JekyllRelativeLinks
     # Use Jekyll's native relative_url filter
     include Jekyll::Filters::URLFilters
 
+    # Matches link text, including images like ![alt](url) or ![alt]
+    # Pattern explanation:
+    # - !\[[^\]]*\](?:\([^\)]*\))? matches complete image patterns: ![...](...) or ![...]
+    # - (?!\]\() uses negative lookahead to match any char except when followed by ](
+    #   This allows nested ] while stopping at the correct closing bracket
     LINK_TEXT_REGEX = %r{((?:!\[[^\]]*\](?:\([^\)]*\))?|(?!\]\().)*?)}.freeze
     FRAGMENT_REGEX = %r!(#.+?|)?!.freeze
     TITLE_REGEX = %r{(\s+"(?:\\"|[^"])*(?<!\\)"|\s+"(?:\\'|[^'])*(?<!\\)')?}.freeze
