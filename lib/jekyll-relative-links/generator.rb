@@ -101,12 +101,25 @@ module JekyllRelativeLinks
     end
 
     def url_for_path(path)
-      target = potential_targets.find { |p| p.relative_path.sub(%r!\A/!, "") == path }
+      target = potential_targets_by_path[path]
       relative_url(target.url) if target&.url
     end
 
     def potential_targets
       @potential_targets ||= site.pages + site.static_files + site.docs_to_write
+    end
+
+    # Index `potential_targets` by the same key the previous linear `find`
+    # compared against, so each `url_for_path` lookup is O(1) instead of
+    # O(N). On a site with M markdown link matches and N potential
+    # targets, total link-resolution cost goes from O(M*N) to O(M+N).
+    # First-wins semantics are preserved against the (unlikely) case of
+    # two targets sharing the same `relative_path`.
+    def potential_targets_by_path
+      @potential_targets_by_path ||= potential_targets.each_with_object({}) do |p, h|
+        key = p.relative_path.sub(%r!\A/!, "")
+        h[key] = p unless h.key?(key)
+      end
     end
 
     def path_from_root(relative_path, url_base)
