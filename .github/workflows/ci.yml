@@ -4,27 +4,37 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.0']
-        jekyll-version: ["~> 3.0", "~> 4.0"]
+        ruby_version:
+          - "3.3"
+          - "4.0"
+        jekyll_version:
+          - "~> 3.0"
+          - "~> 4.0"
+        exclude:
+          # Jekyll 3.x is not compatible with Ruby 4.0; GitHub Pages still
+          # ships Jekyll 3.x, so keep testing it on the newest Ruby that
+          # supports it (3.3).
+          - ruby_version: "4.0"
+            jekyll_version: "~> 3.0"
+
+    env:
+      JEKYLL_VERSION: ${{ matrix.jekyll_version }}
 
     steps:
-      - uses: actions/checkout@v7
+    - uses: actions/checkout@v7
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true
-        env:
-          JEKYLL_VERSION: ${{ matrix.jekyll-version }}
+    - name: Set up Ruby ${{ matrix.ruby_version }}
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby_version }}
+        bundler-cache: true # Runs bundle install and caches installed gems
 
-      - name: Run tests
-        run: script/cibuild
+    - name: Run tests
+      run: script/cibuild

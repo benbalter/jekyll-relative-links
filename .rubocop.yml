@@ -17,7 +17,7 @@ Metrics/BlockLength:
   Exclude:
     - spec/**/*
 
-RSpec/FilePath:
+RSpec/SpecFilePathFormat:
   Exclude:
     - spec/jekyll-relative-links/filter_spec.rb
     - spec/jekyll-relative-links/generator_excerpt_frontmatter_spec.rb
