@@ -32,4 +32,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "benchmark"
   s.add_development_dependency "ostruct"
   s.add_development_dependency "tsort"
+
+  s.required_ruby_version = ">= 3.0"
 end
