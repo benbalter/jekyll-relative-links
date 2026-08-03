@@ -372,4 +372,34 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect { generator.generate(site) }.not_to raise_error
     end
   end
+
+  context "with encoding issues" do
+    before { generator.instance_variable_set :@site, site }
+
+    it "handles non-UTF-8 characters in Dir.pwd" do
+      # Simulate a Windows path with umlauts encoded in Windows-1252
+      allow(Dir).to receive(:pwd).and_return("C:/tmp/Köln/jekyll-issue".encode("Windows-1252"))
+      
+      # This should not raise an Encoding::CompatibilityError
+      expect do
+        generator.send(:path_from_root, "another-page.md".dup, "")
+      end.not_to raise_error
+    end
+
+    it "handles UTF-8 characters in Dir.pwd" do
+      # Test with UTF-8 encoded path (using actual directory structure)
+      current_dir = Dir.pwd
+      # Simulate a path with UTF-8 characters
+      mock_dir = File.join(current_dir, "Köln").encode("UTF-8")
+      allow(Dir).to receive(:pwd).and_return(mock_dir)
+      
+      # Create a path that would match after expansion
+      test_path = File.join(mock_dir, "another-page.md")
+      allow(File).to receive(:expand_path).and_call_original
+      allow(File).to receive(:expand_path).with("another-page.md", "").and_return(test_path)
+      
+      result = generator.send(:path_from_root, "another-page.md".dup, "")
+      expect(result).to eq("another-page.md")
+    end
+  end
 end
