@@ -18,7 +18,7 @@ module JekyllRelativeLinks
       include Jekyll::Filters::URLFilters
 
       def initialize(site)
-        @context = JekyllRelativeLinks::Context.new(site)
+        @context = Liquid::Context.new({}, {}, { :site => site })
       end
     end
 
