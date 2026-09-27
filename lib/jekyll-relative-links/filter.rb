@@ -16,19 +16,7 @@ module JekyllRelativeLinks
       page = @context.registers[:page]
       url_base = page ? File.dirname(page["path"].to_s) : ""
 
-      html.gsub(%r!<a href="([^"]+\.md)(#([^"]+))?"!) do |match|
-        process_link(match, Regexp.last_match, url_base, site)
-      end
-    end
-
-    def process_link(match, regex_match, url_base, site)
-      relative_path = regex_match[1]
-      fragment = regex_match[3] ? "##{regex_match[3]}" : ""
-
-      return match if Resolver.absolute_url?(relative_path) || !relative_path.end_with?(".md")
-
-      url = Resolver.url_for(relative_path, url_base, site)
-      url ? "<a href=\"#{url}#{fragment}\"" : match
+      Resolver.rewrite_html_links(html, url_base, site)
     end
   end
 end

@@ -7,6 +7,12 @@ module JekyllRelativeLinks
   # static file or document it points at. Shared by the generator, the
   # rellinks filter and the post_render hooks so all three agree.
   module Resolver
+    # Matches links to Markdown files in rendered HTML: <a href="*.md">
+    # Capture groups:
+    #   (1) attributes before href, (2) the .md path,
+    #   (3) optional fragment, (4) attributes after href
+    MARKDOWN_LINK_IN_HTML = %r!<a\s+([^>]*?\s+)?href="([^"]+\.md)(#[^"]*)?"\s*([^>]*)>!m.freeze
+
     # Exposes Jekyll's URL filters (e.g. relative_url) outside of Liquid
     class UrlFilter
       include Jekyll::Filters::URLFilters
@@ -24,6 +30,21 @@ module JekyllRelativeLinks
         path   = path_from_root(CGI.unescape(relative_path), url_base)
         target = targets_by_path(site)[path]
         url_filter(site).relative_url(target.url) if target&.url
+      end
+
+      # Rewrites <a href="*.md"> links in rendered HTML, linked from a file in
+      # `url_base`, to the URLs of the pages they point at.
+      def rewrite_html_links(html, url_base, site)
+        html.gsub(MARKDOWN_LINK_IN_HTML) do |match|
+          before, relative_path, fragment, after = Regexp.last_match.captures
+          next match if absolute_url?(relative_path)
+
+          url = url_for(relative_path, url_base, site)
+          next match unless url
+
+          attrs = [before, "href=\"#{url}#{fragment}\"", after].map { |a| a.to_s.strip }
+          "<a #{attrs.reject(&:empty?).join(" ")}>"
+        end
       end
 
       def absolute_url?(string)

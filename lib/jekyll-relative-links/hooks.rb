@@ -21,11 +21,7 @@ module JekyllRelativeLinks
     ENABLED_KEY = "enabled"
     COLLECTIONS_KEY = "collections"
 
-    # Regex to match markdown links in HTML: <a href="*.md">
-    # Capture groups:
-    #   (1) attributes before href, (2) the .md path,
-    #   (3) optional fragment, (4) attributes after href
-    MARKDOWN_LINK_IN_HTML = %r!<a\s+([^>]*?\s+)?href="([^"]+\.md)(#[^"]*)?"\s*([^>]*)>!m.freeze
+    MARKDOWN_LINK_IN_HTML = Resolver::MARKDOWN_LINK_IN_HTML
 
     def self.should_process?(page, config)
       return false if disabled?(config)
@@ -69,34 +65,11 @@ module JekyllRelativeLinks
       entry_filter.glob_include?(config[CONFIG_KEY]["exclude"], document.relative_path)
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
+    # Rewrites <a href="*.md"> links in the output, e.g. ones added by includes
     def self.process_html_links(html, document, site)
       return html if html.nil? || html.empty?
 
-      url_base = File.dirname(document.relative_path)
-
-      # Process <a href="*.md"> links that were added via includes
-      html.gsub(MARKDOWN_LINK_IN_HTML) do |match|
-        attributes_before = Regexp.last_match[1] || ""
-        relative_path = Regexp.last_match[2]
-        fragment = Regexp.last_match[3] || ""
-        attributes_after = Regexp.last_match[4] || ""
-
-        next match if Resolver.absolute_url?(relative_path)
-
-        url = Resolver.url_for(relative_path, url_base, site)
-        if url
-          # Build the replacement ensuring proper spacing
-          attrs = []
-          attrs << attributes_before.strip unless attributes_before.empty?
-          attrs << "href=\"#{url}#{fragment}\""
-          attrs << attributes_after.strip unless attributes_after.empty?
-          "<a #{attrs.join(" ")}>"
-        else
-          match
-        end
-      end
+      Resolver.rewrite_html_links(html, File.dirname(document.relative_path), site)
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
   end
 end
