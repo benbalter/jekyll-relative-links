@@ -1,13 +1,8 @@
 # frozen_string_literal: true
 
-require "cgi"
-
 module JekyllRelativeLinks
   class Generator < Jekyll::Generator
     attr_accessor :site, :config
-
-    # Use Jekyll's native relative_url filter
-    include Jekyll::Filters::URLFilters
 
     # Matches link text, including images like ![alt](url) or ![alt]
     # Pattern explanation:
@@ -37,8 +32,7 @@ module JekyllRelativeLinks
     def generate(site)
       return if disabled?
 
-      @site    = site
-      @context = context
+      @site = site
 
       documents = site.pages
       documents = site.pages + site.docs_to_write if collections?
@@ -60,8 +54,7 @@ module JekyllRelativeLinks
         link = link_parts(Regexp.last_match)
         next original unless replaceable_link?(link.path)
 
-        path = path_from_root(CGI.unescape(link.path), url_base)
-        url  = url_for_path(path)
+        url = Resolver.url_for(link.path, url_base, site)
         next original unless url
 
         link.path = url
@@ -88,47 +81,12 @@ module JekyllRelativeLinks
       Link.new(link_type, link_text, relative_path, fragment, title)
     end
 
-    def context
-      @context ||= JekyllRelativeLinks::Context.new(site)
-    end
-
     def markdown_extension?(extension)
       markdown_converter.matches(extension)
     end
 
     def markdown_converter
       @markdown_converter ||= site.find_converter_instance(CONVERTER_CLASS)
-    end
-
-    def url_for_path(path)
-      target = potential_targets_by_path[path]
-      relative_url(target.url) if target&.url
-    end
-
-    def potential_targets
-      @potential_targets ||= site.pages + site.static_files + site.docs_to_write
-    end
-
-    # Index `potential_targets` by the same key the previous linear `find`
-    # compared against, so each `url_for_path` lookup is O(1) instead of
-    # O(N). On a site with M markdown link matches and N potential
-    # targets, total link-resolution cost goes from O(M*N) to O(M+N).
-    # First-wins semantics are preserved against the (unlikely) case of
-    # two targets sharing the same `relative_path`.
-    def potential_targets_by_path
-      @potential_targets_by_path ||= potential_targets.each_with_object({}) do |p, h|
-        key = p.relative_path.sub(%r!\A/!, "")
-        h[key] = p unless h.key?(key)
-      end
-    end
-
-    def path_from_root(relative_path, url_base)
-      is_absolute = relative_path.start_with? "/"
-
-      relative_path.sub!(%r!\A/!, "")
-      base = is_absolute ? "" : url_base
-      absolute_path = File.expand_path(relative_path, base)
-      absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
     end
 
     # @param link [Link] A Link object describing the markdown link to make
@@ -142,20 +100,12 @@ module JekyllRelativeLinks
       end
     end
 
-    def absolute_url?(string)
-      return false unless string
-
-      Addressable::URI.parse(string).absolute?
-    rescue Addressable::URI::InvalidURIError
-      false
-    end
-
     def fragment?(string)
       string&.start_with?("#")
     end
 
     def replaceable_link?(string)
-      !fragment?(string) && !absolute_url?(string)
+      !fragment?(string) && !Resolver.absolute_url?(string)
     end
 
     def option(key)

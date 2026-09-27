@@ -16,15 +16,6 @@ module JekyllRelativeLinks
   end
 
   module Hooks
-    # Exposes Jekyll's URL filters (e.g. relative_url) outside of Liquid
-    class UrlFilter
-      include Jekyll::Filters::URLFilters
-
-      def initialize(site)
-        @context = JekyllRelativeLinks::Context.new(site)
-      end
-    end
-
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
@@ -78,45 +69,23 @@ module JekyllRelativeLinks
       entry_filter.glob_include?(config[CONFIG_KEY]["exclude"], document.relative_path)
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
     def self.process_html_links(html, document, site)
       return html if html.nil? || html.empty?
 
       url_base = File.dirname(document.relative_path)
-      url_filter = UrlFilter.new(site)
-      potential_targets = site.pages + site.static_files + site.docs_to_write
 
       # Process <a href="*.md"> links that were added via includes
-      # rubocop:disable Metrics/BlockLength
       html.gsub(MARKDOWN_LINK_IN_HTML) do |match|
         attributes_before = Regexp.last_match[1] || ""
         relative_path = Regexp.last_match[2]
         fragment = Regexp.last_match[3] || ""
         attributes_after = Regexp.last_match[4] || ""
 
-        # Skip absolute URLs
-        begin
-          next match if Addressable::URI.parse(relative_path).absolute?
-        rescue Addressable::URI::InvalidURIError
-          next match
-        end
+        next match if Resolver.absolute_url?(relative_path)
 
-        # Calculate path from root
-        is_absolute = relative_path.start_with?("/")
-        relative_path_clean = relative_path.delete_prefix("/")
-        base = is_absolute ? "" : url_base
-        absolute_path = File.expand_path(relative_path_clean, base)
-        path = absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
-
-        # Find the target page and get its URL
-        path = CGI.unescape(path)
-        target = potential_targets.find { |p| p.relative_path.delete_prefix("/") == path }
-
-        if target&.url
-          # Use Jekyll's relative_url so the site's baseurl is applied, the
-          # same as links rewritten by the generator.
-          url = url_filter.relative_url(target.url)
-
+        url = Resolver.url_for(relative_path, url_base, site)
+        if url
           # Build the replacement ensuring proper spacing
           attrs = []
           attrs << attributes_before.strip unless attributes_before.empty?
@@ -127,8 +96,7 @@ module JekyllRelativeLinks
           match
         end
       end
-      # rubocop:enable Metrics/BlockLength
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
   end
 end
