@@ -16,6 +16,15 @@ module JekyllRelativeLinks
   end
 
   module Hooks
+    # Exposes Jekyll's URL filters (e.g. relative_url) outside of Liquid
+    class UrlFilter
+      include Jekyll::Filters::URLFilters
+
+      def initialize(site)
+        @context = JekyllRelativeLinks::Context.new(site)
+      end
+    end
+
     CONVERTER_CLASS = Jekyll::Converters::Markdown
     CONFIG_KEY = "relative_links"
     ENABLED_KEY = "enabled"
@@ -74,6 +83,7 @@ module JekyllRelativeLinks
       return html if html.nil? || html.empty?
 
       url_base = File.dirname(document.relative_path)
+      url_filter = UrlFilter.new(site)
       potential_targets = site.pages + site.static_files + site.docs_to_write
 
       # Process <a href="*.md"> links that were added via includes
@@ -103,9 +113,9 @@ module JekyllRelativeLinks
         target = potential_targets.find { |p| p.relative_path.delete_prefix("/") == path }
 
         if target&.url
-          # Use Jekyll's URL
-          url = target.url
-          url = "/#{url}" unless url.start_with?("/")
+          # Use Jekyll's relative_url so the site's baseurl is applied, the
+          # same as links rewritten by the generator.
+          url = url_filter.relative_url(target.url)
 
           # Build the replacement ensuring proper spacing
           attrs = []
