@@ -22,4 +22,16 @@ RSpec.describe JekyllRelativeLinks::Generator do
     # Currently fails: shows href="target.md" instead of href="/target.html"
     expect(index_page.output).to include('href="/target.html"').twice
   end
+
+  context "with a baseurl" do
+    let(:site) { fixture_site("site-with-includes", "baseurl" => "/foo") }
+
+    it "applies the baseurl to links in included content" do
+      expect(index_page.output).to include('href="/foo/target.html"').twice
+    end
+
+    it "does not emit links without the baseurl" do
+      expect(index_page.output).not_to include('href="/target.html"')
+    end
+  end
 end

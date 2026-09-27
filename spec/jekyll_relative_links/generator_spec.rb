@@ -191,6 +191,20 @@ RSpec.describe JekyllRelativeLinks::Generator do
       end
     end
 
+    context "when the same generator runs again after a rebuild" do
+      before do
+        site.reset
+        site.read
+        site.static_files << Jekyll::StaticFile.new(site, site.source, "", "ghost-page.md")
+        generator.generate(site)
+      end
+
+      it "resolves targets added since the previous build" do
+        rebuilt_page = page_by_path(site, "page.md")
+        expect(rebuilt_page.content).to include("[Ghost page](/ghost-page.md)")
+      end
+    end
+
     context "with a non-standard permalink structure" do
       let(:overrides) { { "permalink" => "/:year/:month/:title:output_ext" } }
 

@@ -21,11 +21,7 @@ module JekyllRelativeLinks
     ENABLED_KEY = "enabled"
     COLLECTIONS_KEY = "collections"
 
-    # Regex to match markdown links in HTML: <a href="*.md">
-    # Capture groups:
-    #   (1) attributes before href, (2) the .md path,
-    #   (3) optional fragment, (4) attributes after href
-    MARKDOWN_LINK_IN_HTML = %r!<a\s+([^>]*?\s+)?href="([^"]+\.md)(#[^"]*)?"\s*([^>]*)>!m.freeze
+    MARKDOWN_LINK_IN_HTML = Resolver::MARKDOWN_LINK_IN_HTML
 
     def self.should_process?(page, config)
       return false if disabled?(config)
@@ -69,56 +65,11 @@ module JekyllRelativeLinks
       entry_filter.glob_include?(config[CONFIG_KEY]["exclude"], document.relative_path)
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+    # Rewrites <a href="*.md"> links in the output, e.g. ones added by includes
     def self.process_html_links(html, document, site)
       return html if html.nil? || html.empty?
 
-      url_base = File.dirname(document.relative_path)
-      potential_targets = site.pages + site.static_files + site.docs_to_write
-
-      # Process <a href="*.md"> links that were added via includes
-      # rubocop:disable Metrics/BlockLength
-      html.gsub(MARKDOWN_LINK_IN_HTML) do |match|
-        attributes_before = Regexp.last_match[1] || ""
-        relative_path = Regexp.last_match[2]
-        fragment = Regexp.last_match[3] || ""
-        attributes_after = Regexp.last_match[4] || ""
-
-        # Skip absolute URLs
-        begin
-          next match if Addressable::URI.parse(relative_path).absolute?
-        rescue Addressable::URI::InvalidURIError
-          next match
-        end
-
-        # Calculate path from root
-        is_absolute = relative_path.start_with?("/")
-        relative_path_clean = relative_path.delete_prefix("/")
-        base = is_absolute ? "" : url_base
-        absolute_path = File.expand_path(relative_path_clean, base)
-        path = absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
-
-        # Find the target page and get its URL
-        path = CGI.unescape(path)
-        target = potential_targets.find { |p| p.relative_path.delete_prefix("/") == path }
-
-        if target&.url
-          # Use Jekyll's URL
-          url = target.url
-          url = "/#{url}" unless url.start_with?("/")
-
-          # Build the replacement ensuring proper spacing
-          attrs = []
-          attrs << attributes_before.strip unless attributes_before.empty?
-          attrs << "href=\"#{url}#{fragment}\""
-          attrs << attributes_after.strip unless attributes_after.empty?
-          "<a #{attrs.join(" ")}>"
-        else
-          match
-        end
-      end
-      # rubocop:enable Metrics/BlockLength
+      Resolver.rewrite_html_links(html, File.dirname(document.relative_path), site)
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
   end
 end

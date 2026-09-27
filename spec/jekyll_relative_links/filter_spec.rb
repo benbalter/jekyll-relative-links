@@ -58,6 +58,12 @@ RSpec.describe JekyllRelativeLinks::Filter do
     expect(filter.rellinks(html)).to eq(expected)
   end
 
+  it "handles links with attributes before and after href" do
+    html = "<p><a class=\"x\" href=\"another-page.md#section\" title=\"t\">Link</a></p>"
+    expected = "<p><a class=\"x\" href=\"/another-page.html#section\" title=\"t\">Link</a></p>"
+    expect(filter.rellinks(html)).to eq(expected)
+  end
+
   it "doesn't modify invalid links" do
     html = "<p><a href=\"ghost-page.md\">Ghost</a></p>"
     expect(filter.rellinks(html)).to eq(html)
