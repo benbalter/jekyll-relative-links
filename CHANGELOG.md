@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.9.0
+
+### Bug fixes
+
+- Apply the site's `baseurl` to links rewritten in includes, fixing project
+  pages served from `/repo/` (#125)
+- Resolve links to pages added during `jekyll serve` rebuilds (#125)
+- The `rellinks` filter now rewrites links whose `href` isn't the first
+  attribute (#125)
+
+### Performance
+
+- Resolve link targets through one per-site index instead of scanning every
+  page for each link (#125)
+
+### Removed
+
+- The internal `JekyllRelativeLinks::Context` class, and `process_link`, which
+  was unintentionally exposed as a Liquid filter (#125)
+
+### Dependencies
+
+- Declare `required_ruby_version >= 3.0` (#117)
+
+### Infrastructure
+
+- Bump `github/codeql-action` (#118, #122)
+
 ## 0.8.0
 
 ### Features
