@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.1
+
+Maintenance release: no runtime behavior changes.
+
+### Documentation
+
+- Add a gemspec description and RubyGems metadata (homepage, source code,
+  bug tracker, and changelog links), and lead the README with the same
+  one-line description (#127)
+
 ## 0.9.0
 
 ### Bug fixes
