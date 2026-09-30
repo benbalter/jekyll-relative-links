@@ -1,8 +1,8 @@
 # Jekyll Relative Links
 
-[![CI](https://github.com/benbalter/jekyll-relative-links/actions/workflows/ci.yml/badge.svg)](https://github.com/benbalter/jekyll-relative-links/actions/workflows/ci.yml)
+Jekyll plugin that turns relative links to .md files into working HTML links, like on GitHub. Supported on GitHub Pages.
 
-A Jekyll plugin to convert relative links to Markdown files to their rendered equivalents.
+[![CI](https://github.com/benbalter/jekyll-relative-links/actions/workflows/ci.yml/badge.svg)](https://github.com/benbalter/jekyll-relative-links/actions/workflows/ci.yml)
 
 ## What it does
 
