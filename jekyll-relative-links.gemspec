@@ -10,7 +10,15 @@ Gem::Specification.new do |s|
   s.email         = ["ben.balter@github.com"]
   s.homepage      = "https://github.com/benbalter/jekyll-relative-links"
   s.summary       = "A Jekyll plugin to convert relative links to markdown files " \
-                    "to their rendered equivalents.\n"
+                    "to their rendered equivalents."
+  s.description   = "Jekyll plugin that turns relative links to .md files into working HTML " \
+                    "links, like on GitHub. Supported on GitHub Pages."
+  s.metadata      = {
+    "homepage_uri"    => "https://github.com/benbalter/jekyll-relative-links",
+    "source_code_uri" => "https://github.com/benbalter/jekyll-relative-links",
+    "bug_tracker_uri" => "https://github.com/benbalter/jekyll-relative-links/issues",
+    "changelog_uri"   => "https://github.com/benbalter/jekyll-relative-links/releases",
+  }
 
   s.files         = `git ls-files app lib`.split("\n")
   s.platform      = Gem::Platform::RUBY
