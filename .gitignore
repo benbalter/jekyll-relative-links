@@ -9,3 +9,4 @@ spec/fixtures/site/.jekyll-cache/
 # Vendor directory for bundle
 vendor/
 .bundle/
+/pkg/
