@@ -47,6 +47,8 @@
 
 [A link with a title](another-page.md "This is a link with a \"title\"")
 
+[A link with a single-quoted title](another-page.md 'Title')
+
 [Quotes in url & title](/another-page.md#'apostrophe' 'Quotes in url & title')
 
 [Link with inline image ![badge](https://example.com/badge.png)](another-page.md)
@@ -66,6 +68,8 @@ Content end
 [reference-with-whitespace]: another-page.md  
 
 [reference-with-title]: another-page.md "This is a reference with a title"
+
+[reference-with-single-quoted-title]: another-page.md 'Title'
 
 [Line-wrapped link
 text](another-page.md)

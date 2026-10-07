@@ -11,7 +11,7 @@ module JekyllRelativeLinks
     #   This allows nested ] while stopping at the correct closing bracket
     LINK_TEXT_REGEX = %r{((?:!\[[^\]]*\](?:\([^\)]*\))?|(?!\]\().)*?)}.freeze
     FRAGMENT_REGEX = %r!(#.+?|)?!.freeze
-    TITLE_REGEX = %r{(\s+"(?:\\"|[^"])*(?<!\\)"|\s+"(?:\\'|[^'])*(?<!\\)')?}.freeze
+    TITLE_REGEX = %r{(\s+"(?:\\"|[^"])*(?<!\\)"|\s+'(?:\\'|[^'])*(?<!\\)')?}.freeze
     FRAG_AND_TITLE_REGEX = %r!#{FRAGMENT_REGEX}#{TITLE_REGEX}!.freeze
     INLINE_LINK_REGEX = %r!\[#{LINK_TEXT_REGEX}\]\(([^)]+?)#{FRAG_AND_TITLE_REGEX}\)!.freeze
     REFERENCE_LINK_REGEX = %r!^\s*?\[#{LINK_TEXT_REGEX}\]: (.+?)#{FRAG_AND_TITLE_REGEX}\s*?$!.freeze

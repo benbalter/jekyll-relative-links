@@ -128,6 +128,11 @@ RSpec.describe JekyllRelativeLinks::Generator do
       expect(page.content).to include(expected)
     end
 
+    it "handles links with a single-quoted title" do
+      expected = "[A link with a single-quoted title](/another-page.html 'Title')"
+      expect(page.content).to include(expected)
+    end
+
     it "handles links with quotes in url fragment and title" do
       # single_quotes are valid in urls
       expected = "[Quotes in url & title](/another-page.html#'apostrophe' 'Quotes in url & title')"
@@ -165,6 +170,11 @@ RSpec.describe JekyllRelativeLinks::Generator do
 
       it "handles reference links with titles" do
         expected = "[reference-with-title]: /another-page.html \"This is a reference with a title\""
+        expect(page.content).to include(expected)
+      end
+
+      it "handles reference links with single-quoted titles" do
+        expected = "[reference-with-single-quoted-title]: /another-page.html 'Title'"
         expect(page.content).to include(expected)
       end
     end
