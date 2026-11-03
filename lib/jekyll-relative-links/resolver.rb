@@ -50,6 +50,8 @@ module JekyllRelativeLinks
 
       def absolute_url?(string)
         return false unless string
+        # Protocol-relative URLs (//host/path) point at another host
+        return true if string.start_with?("//")
 
         Addressable::URI.parse(string).absolute?
       rescue Addressable::URI::InvalidURIError

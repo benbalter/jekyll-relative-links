@@ -32,4 +32,15 @@ RSpec.describe JekyllRelativeLinks::Resolver do
       expect(url).to eql("/another-page.html")
     end
   end
+
+  describe ".absolute_url?" do
+    it "treats protocol-relative URLs as absolute" do
+      expect(described_class.absolute_url?("//another-page.md")).to be(true)
+      expect(described_class.absolute_url?("//example.com/page.md")).to be(true)
+    end
+
+    it "treats root-relative paths as relative" do
+      expect(described_class.absolute_url?("/another-page.md")).to be(false)
+    end
+  end
 end
