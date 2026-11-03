@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "cgi"
+require "pathname"
 
 module JekyllRelativeLinks
   # Resolves a relative link to a Markdown file into the URL of the page,
@@ -49,6 +50,8 @@ module JekyllRelativeLinks
 
       def absolute_url?(string)
         return false unless string
+        # Protocol-relative URLs (//host/path) point at another host
+        return true if string.start_with?("//")
 
         Addressable::URI.parse(string).absolute?
       rescue Addressable::URI::InvalidURIError
@@ -57,9 +60,10 @@ module JekyllRelativeLinks
 
       def path_from_root(relative_path, url_base)
         is_absolute   = relative_path.start_with?("/")
-        base          = is_absolute ? "" : url_base
-        absolute_path = File.expand_path(relative_path.delete_prefix("/"), base)
-        absolute_path.sub(%r!\A#{Regexp.escape(Dir.pwd)}/!, "")
+        base          = is_absolute || url_base.empty? ? "." : url_base
+        # Don't use File.expand_path: it expands a leading `~` or `~user`
+        # and raises for users that don't exist.
+        Pathname.new(File.join(base, relative_path.delete_prefix("/"))).cleanpath.to_s
       end
 
       # Index potential link targets by relative path so each lookup is O(1).
