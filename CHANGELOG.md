@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.9.2
+
+### Bug fixes
+
+- Convert links with single-quoted titles, such as `[foo](bar.md 'Title')`,
+  which were left unconverted (#137, #138).
+  Thanks to [@azmi2409](https://github.com/azmi2409).
+- Don't expand `~` in link paths, so a link like `/~user/file.pdf` no longer
+  crashes the build with `ArgumentError: user doesn't exist` (#68, #139).
+  Thanks to [@ammadakram](https://github.com/ammadakram).
+- Leave protocol-relative links such as `//example.com/page.md` alone, since
+  browsers resolve them against another host (#139)
+
 ## 0.9.1
 
 Maintenance release: no runtime behavior changes.
