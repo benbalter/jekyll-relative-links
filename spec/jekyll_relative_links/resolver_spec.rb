@@ -27,6 +27,14 @@ RSpec.describe JekyllRelativeLinks::Resolver do
       expect(described_class.url_for("subdir/page.md", "", site)).to eql("/subdir/page.html")
     end
 
+    it "keeps a literal + in the path" do
+      expect(described_class.url_for("c++.md", ".", site)).to eql("/c++.html")
+    end
+
+    it "decodes an encoded + in the path" do
+      expect(described_class.url_for("c%2B%2B.md", ".", site)).to eql("/c++.html")
+    end
+
     it "still resolves ../ links" do
       url = described_class.url_for("../another-page.md", "subdir", site)
       expect(url).to eql("/another-page.html")
