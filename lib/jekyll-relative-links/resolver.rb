@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "cgi"
 require "pathname"
 
 module JekyllRelativeLinks
@@ -28,7 +27,9 @@ module JekyllRelativeLinks
       # linked from a file in `url_base`, resolves to, or nil if there's no
       # such page, static file or document.
       def url_for(relative_path, url_base, site)
-        path   = path_from_root(CGI.unescape(relative_path), url_base)
+        # Percent-decode only. CGI.unescape is a form decoder and turns a
+        # literal `+` into a space, so `c++.md` would never resolve.
+        path   = path_from_root(Addressable::URI.unencode_component(relative_path), url_base)
         target = targets_by_path(site)[path]
         url_filter(site).relative_url(target.url) if target&.url
       end
