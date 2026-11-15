@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake", "~> 13.0"
   s.add_development_dependency "rspec", "~> 3.5"
   s.add_development_dependency "rubocop", "~> 1.0"
-  s.add_development_dependency "rubocop-factory_bot", "~> 2.26.0"
+  s.add_development_dependency "rubocop-factory_bot", "~> 2.28.0"
   s.add_development_dependency "rubocop-jekyll", "~> 0.10"
   s.add_development_dependency "rubocop-performance", "~> 1.5"
   s.add_development_dependency "rubocop-rspec", "~> 3.0"
